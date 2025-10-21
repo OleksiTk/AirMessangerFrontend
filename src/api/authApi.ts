@@ -1,7 +1,5 @@
 // frontend/src/api/authApi.ts
-const API_BASE_URL =
-  "https://airmessangerbackend-production.up.railway.app/api";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const authApi = {
   register: async (email: string, password: string, name_profile: string) => {
     const res = await fetch(`${API_BASE_URL}/auth/register`, {
