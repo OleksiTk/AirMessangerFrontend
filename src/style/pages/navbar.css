@@ -1,0 +1,30 @@
+.footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  padding-inline: 16px;
+}
+.footer__contats {
+  cursor: pointer;
+}
+.footer__chats {
+  cursor: pointer;
+}
+.footer__menu {
+  cursor: pointer;
+}
+.footer__block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.footer__block__text {
+  font-family: var(--second-family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 171%;
+  color: var(--neutral-off-white);
+}/*# sourceMappingURL=navbar.css.map */

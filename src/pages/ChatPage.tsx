@@ -1,0 +1,462 @@
+import React, { useEffect, useState, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import io, { Socket } from "socket.io-client";
+import "../style/pages/chat.css";
+import { chatApi } from "../api/chatApi";
+
+interface Message {
+  id: number;
+  content: string;
+  author: {
+    id: number;
+    name_profile: string;
+    avatar: string;
+  };
+  authorGoogleId: string;
+  createdAt: string;
+  isRead: boolean;
+}
+
+interface Chat {
+  id: number;
+  participant1: {
+    id: number;
+    name_profile: string;
+    avatar: string;
+    name: string;
+    googleId: string;
+  };
+  participant2: {
+    id: number;
+    name_profile: string;
+    avatar: string;
+    name: string;
+    googleId: string;
+  };
+}
+
+let socket: Socket | null = null;
+
+const getSocket = () => {
+  if (!socket) {
+    socket = io("http://localhost:3000", {
+      transports: ["websocket", "polling"],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5,
+    });
+  }
+  return socket;
+};
+
+function ChatPage() {
+  const { profileName } = useParams<{ profileName: string }>();
+  const navigate = useNavigate();
+  const currentSocket = getSocket();
+
+  const [chat, setChat] = useState<Chat | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const currentUserProfile = localStorage.getItem("user");
+  const currentUserGoogleId = localStorage.getItem("googleId");
+
+  // Автоскрол
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // Завантажити чат з API
+  useEffect(() => {
+    if (!profileName) {
+      setError("Profile name not provided");
+      setLoading(false);
+      return;
+    }
+
+    const fetchChat = async () => {
+      try {
+        setLoading(true);
+        const chatData = await chatApi.getChatWithUser(profileName);
+        setChat(chatData);
+        setMessages(chatData.messages || []);
+        console.log("Chat loaded:", chatData);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to load chat";
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChat();
+  }, [profileName]);
+
+  // Socket.IO підключення
+  useEffect(() => {
+    if (!chat) {
+      return console.log("dont have chat");
+    }
+    // Підключаємось до сокета
+    const handleConnect = () => {
+      setIsConnected(true);
+      console.log("Socket connected:", currentSocket.id);
+
+      // Приєднуємось до чату
+      currentSocket.emit("join_chat", {
+        chatId: chat.id,
+        googleId: currentUserGoogleId,
+        name_profile: currentUserProfile,
+      });
+    };
+
+    const handleDisconnect = () => {
+      setIsConnected(false);
+      console.log("Socket disconnected");
+    };
+
+    // Отримуємо нові повідомлення
+    const handleReceiveMessage = (message: Message) => {
+      console.log("New message received:", message);
+      setMessages((prev) => {
+        // ✅ Перевіряємо чи повідомлення вже є
+        if (prev.some((msg) => msg.id === message.id)) {
+          return prev;
+        }
+        return [...prev, message];
+      });
+    };
+
+    // Сповіщення про друкування
+    const handleUserTyping = (data: {
+      name_profile: string;
+      isTyping: boolean;
+    }) => {
+      if (data.name_profile !== currentUserProfile) {
+        setIsTyping(data.isTyping);
+
+        // ✅ Автоматично ховаємо "typing..." через 3 секунди
+        if (data.isTyping && typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
+        if (data.isTyping) {
+          typingTimeoutRef.current = setTimeout(() => {
+            setIsTyping(false);
+          }, 3000);
+        }
+      }
+    };
+
+    // Користувач приєднався
+    const handleUserJoined = (data: { name_profile: string }) => {
+      console.log(`${data.name_profile} joined`);
+    };
+
+    // Користувач залишив
+    const handleUserLeft = (data: { name_profile: string }) => {
+      console.log(`${data.name_profile} left`);
+    };
+
+    // Повідомлення прочитане
+    const handleMessageRead = (data: { messageId: number }) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === data.messageId ? { ...msg, isRead: true } : msg
+        )
+      );
+    };
+
+    // ✅ Реєструємо всі обробники
+    currentSocket.on("connect", handleConnect);
+    currentSocket.on("disconnect", handleDisconnect);
+    currentSocket.on("receive_message", handleReceiveMessage);
+    currentSocket.on("user_typing", handleUserTyping);
+    currentSocket.on("user_joined", handleUserJoined);
+    currentSocket.on("user_left", handleUserLeft);
+    currentSocket.on("message_read", handleMessageRead);
+
+    // ✅ Якщо вже підключені
+    if (currentSocket.connected) {
+      handleConnect();
+    }
+
+    return () => {
+      // ✅ Видаляємо ВСІ обробники при unmount
+      currentSocket.off("connect", handleConnect);
+      currentSocket.off("disconnect", handleDisconnect);
+      currentSocket.off("receive_message", handleReceiveMessage);
+      currentSocket.off("user_typing", handleUserTyping);
+      currentSocket.off("user_joined", handleUserJoined);
+      currentSocket.off("user_left", handleUserLeft);
+      currentSocket.off("message_read", handleMessageRead);
+
+      if (chat) {
+        currentSocket.emit("leave_chat", {
+          chatId: chat.id,
+          name_profile: currentUserProfile,
+        });
+      }
+
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, [chat, currentUserGoogleId, currentUserProfile]);
+
+  // Надіслати повідомлення
+  const handleSendMessage = () => {
+    if (!newMessage.trim() || !chat || !currentUserGoogleId) {
+      return;
+    }
+
+    console.log("Sending message:", newMessage);
+
+    currentSocket.emit("send_message", {
+      chatId: chat.id,
+      content: newMessage,
+      googleId: currentUserGoogleId,
+    });
+
+    setNewMessage("");
+
+    // ✅ Зупиняємо індикатор "typing"
+    currentSocket.emit("typing", {
+      chatId: chat.id,
+      name_profile: currentUserProfile,
+      isTyping: false,
+    });
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+      return;
+    }
+
+    // ✅ Повідомляємо, що користувач друкує (тільки якщо є текст)
+    if (newMessage.trim() && chat) {
+      currentSocket.emit("typing", {
+        chatId: chat.id,
+        name_profile: currentUserProfile,
+        isTyping: true,
+      });
+
+      // ✅ Зупиняємо через 2 секунди
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      typingTimeoutRef.current = setTimeout(() => {
+        currentSocket.emit("typing", {
+          chatId: chat.id,
+          name_profile: currentUserProfile,
+          isTyping: false,
+        });
+      }, 2000);
+    }
+  };
+
+  const opponent =
+    chat?.participant1.name_profile === currentUserProfile
+      ? chat?.participant2
+      : chat?.participant1;
+
+  if (loading) {
+    return (
+      <div className="chat">
+        <div className="container">
+          <div style={{ textAlign: "center", padding: "20px" }}>
+            Loading chat...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="chat">
+        <div className="container">
+          <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
+            Error: {error}
+            <button onClick={() => navigate(-1)} style={{ marginTop: "10px" }}>
+              Go Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="chat">
+      <div className="container">
+        {/* Header */}
+        <header className="header-chat">
+          <div className="header-chat__arrow" onClick={() => navigate(-1)}>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8.28809 12L14.2981 18.01L15.7121 16.596L11.1121 11.996L15.7121 7.39599L14.2981 5.98999L8.28809 12Z"
+                fill="#F7F7FC"
+              />
+            </svg>
+          </div>
+          <div className="header-chat__name">
+            {opponent?.name || opponent?.name_profile}
+            <span
+              style={{
+                marginLeft: "10px",
+                fontSize: "10px",
+                color: isConnected ? "#25d366" : "#e74c3c",
+              }}
+            >
+              {isConnected ? "🟢 Online" : "🔴 Offline"}
+            </span>
+          </div>
+          <div className="header-chat__settings">
+            <div className="header__settings-search">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18.677 19.607L12.962 13.891C10.4196 15.6984 6.91642 15.2563 4.90285 12.8739C2.88929 10.4915 3.03714 6.96358 5.24298 4.75799C7.44824 2.55144 10.9765 2.40295 13.3594 4.4164C15.7422 6.42986 16.1846 9.93344 14.377 12.476L20.092 18.192L18.678 19.606L18.677 19.607ZM9.48498 4.99997C7.58868 4.99955 5.95267 6.33066 5.56745 8.18742C5.18224 10.0442 6.15369 11.9163 7.89366 12.6702C9.63362 13.4242 11.6639 12.8528 12.7552 11.302C13.8466 9.75126 13.699 7.64731 12.402 6.26399L13.007 6.86399L12.325 6.18399L12.313 6.17199C11.5648 5.41917 10.5464 4.99712 9.48498 4.99997Z"
+                  fill="#F7F7FC"
+                />
+              </svg>
+            </div>
+          </div>
+        </header>
+
+        {/* Messages */}
+        <main className="main-chats">
+          <div className="main-chats__chat">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={
+                  message.authorGoogleId === currentUserGoogleId
+                    ? "main-chats__chat-you"
+                    : "main-chats__chat-friends"
+                }
+              >
+                <div
+                  className={
+                    message.authorGoogleId === currentUserGoogleId
+                      ? "chat-you"
+                      : "chat-friends"
+                  }
+                >
+                  <div
+                    className={
+                      message.authorGoogleId === currentUserGoogleId
+                        ? "chat-you__message"
+                        : "chat-friends__message"
+                    }
+                  >
+                    {message.content}
+                  </div>
+                  <div
+                    className={
+                      message.authorGoogleId === currentUserGoogleId
+                        ? "chat-you__message-time"
+                        : "chat-friends__message-time"
+                    }
+                  >
+                    {new Date(message.createdAt).toLocaleTimeString("uk-UA", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}{" "}
+                    · {message.isRead ? "Read" : "Sent"}
+                  </div>
+                </div>
+              </div>
+            ))}
+            {isTyping && (
+              <div className="main-chats__chat-friends">
+                <div className="chat-friends">
+                  <div
+                    className="chat-friends__message"
+                    style={{ fontStyle: "italic", opacity: 0.7 }}
+                  >
+                    typing...
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        </main>
+
+        {/* Footer */}
+        <footer className="footer">
+          <div className="footer__container">
+            <div className="footer__plus-add-file">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M8 8V14H6V8H0V6H6V0H8V6H14V8H8Z" fill="#ADB5BD" />
+              </svg>
+            </div>
+            <div className="footer__input">
+              <input
+                id="messageInput"
+                name="message"
+                type="text"
+                className="footer__input-text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type a message..."
+              />
+            </div>
+            <div
+              className="footer__send"
+              onClick={handleSendMessage}
+              style={{
+                opacity: isConnected && newMessage.trim() ? 1 : 0.5,
+                cursor:
+                  isConnected && newMessage.trim() ? "pointer" : "not-allowed",
+              }}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M17.7825 0.21751C17.6813 0.116765 17.5534 0.0470131 17.4139 0.0164552C17.2744 -0.0141027 17.1291 -0.0041961 16.995 0.0450103L0.495001 6.04501C0.352702 6.09898 0.230191 6.19497 0.143739 6.32023C0.0572872 6.44548 0.0109863 6.59407 0.0109863 6.74626C0.0109863 6.89845 0.0572872 7.04704 0.143739 7.17229C0.230191 7.29755 0.352702 7.39354 0.495001 7.44751L6.9375 10.02L11.6925 5.25001L12.75 6.30751L7.9725 11.085L10.5525 17.5275C10.6081 17.6671 10.7043 17.7867 10.8286 17.8709C10.953 17.9552 11.0998 18.0002 11.25 18C11.4016 17.9969 11.5486 17.9479 11.6718 17.8596C11.795 17.7712 11.8885 17.6476 11.94 17.505L17.94 1.00501C17.9911 0.872318 18.0034 0.727833 17.9755 0.588403C17.9477 0.448973 17.8807 0.320343 17.7825 0.21751Z"
+                  fill="#375FFF"
+                />
+              </svg>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+  );
+}
+
+export default ChatPage;

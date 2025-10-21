@@ -1,0 +1,164 @@
+.chat {
+  overflow-x: hidden; // Змінено на overflow-x
+
+  padding-inline: 8px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.header-chat {
+  padding-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  flex-shrink: 0; // Щоб header не стискався
+  &__name {
+    margin-left: -130px;
+    font-family: var(--font-family);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 167%;
+    color: var(--neutral-off-white);
+  }
+  &__settings {
+    display: flex;
+    flex-direction: row;
+    column-gap: 10px;
+  }
+}
+
+.main-chats {
+  overflow-y: auto;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--neutral-dark);
+  margin-inline: -8px;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden; // Додайте це!
+  width: calc(100% + 16px); // Замість 100vw
+  padding-block: 10px;
+  &__chat {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+    padding-inline: 16px;
+
+    &-you {
+      display: flex;
+      flex-direction: column;
+
+      align-items: flex-end;
+      row-gap: 10px;
+      width: 100%;
+    }
+
+    &-friends {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      row-gap: 10px;
+      width: 100%;
+    }
+
+    .chat-you {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      border-radius: 16px 16px 0 16px;
+      padding: 10px;
+      max-width: 70%; // Адаптивна ширина (максимум 70% екрану)
+      min-width: 130px; // Мінімальна ширина
+      background: var(--brand-color-dark-mode);
+      justify-content: space-between;
+
+      &__message {
+        font-family: var(--font-family);
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 171%;
+        color: var(--neutral-off-white);
+        word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+        max-width: 100%; // Важливо!
+      }
+
+      &__message-time {
+        font-family: var(--second-family);
+        font-weight: 400;
+        font-size: 10px;
+        line-height: 160%;
+        color: var(--neutral-off-white);
+        margin-top: 4px;
+      }
+    }
+
+    .chat-friends {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      border-radius: 16px 16px 16px 0;
+      padding: 10px;
+      max-width: 70%; // Адаптивна ширина
+      min-width: 130px;
+      background: var(--neutral-active);
+      justify-content: space-between;
+
+      &__message {
+        font-family: var(--font-family);
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 171%;
+        color: var(--neutral-off-white);
+        word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+        max-width: 100%; // Важливо!
+      }
+
+      &__message-time {
+        font-family: var(--second-family);
+        font-weight: 400;
+        font-size: 10px;
+        line-height: 160%;
+        color: var(--neutral-disabled);
+        margin-top: 4px;
+      }
+    }
+  }
+}
+.footer {
+  &__container {
+    padding-top: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__input {
+    &-text {
+      font-family: var(--font-family);
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 171%;
+      color: var(--neutral-off-white);
+      background: var(--neutral-dark);
+      border-radius: 4px;
+      border: none;
+      padding: 6px 8px;
+      width: 239px;
+      height: 36px;
+    }
+  }
+}

@@ -1,0 +1,203 @@
+.more {
+  padding-block: 16px;
+  padding-inline: 8px;
+}
+
+.container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.main {
+  flex-grow: 1;
+  padding-top: 30px;
+  padding-inline: 16px;
+  padding-bottom: 100px;
+}
+.main__accounts {
+  padding-bottom: 40px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.main__accounts-icon {
+  position: relative;
+  border-radius: 50px;
+  width: 49px;
+  height: 50px;
+  background: var(--neutral-dark);
+}
+.main__accounts-icon svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  fill: var(--neutral-off-white);
+}
+.main__accounts-profile-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: -120px;
+  row-gap: 3px;
+}
+.main__accounts-profile-info_name {
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 171%;
+  color: var(--neutral-off-white);
+}
+.main__accounts-profile-info_telephone {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 167%;
+  color: var(--neutral-disabled);
+}
+.main__accounts-information {
+  gap: 20px;
+  padding-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+.main__accounts-information .information-profile {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.main__accounts-information .information-profile__text {
+  margin-left: 10px;
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 171%;
+  color: var(--neutral-off-white);
+}
+.main__accounts-information .information-profile__arrow {
+  margin-left: 223px;
+}
+.main__accounts-information .information-chats {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.main__accounts-information .information-chats__text {
+  margin-left: 10px;
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 171%;
+  color: var(--neutral-off-white);
+}
+.main__accounts-information .information-chats__arrow {
+  margin-left: 239px;
+}
+.main__settings {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  row-gap: 20px;
+}
+.main__settings-appereance {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.main__settings-appereance-text {
+  margin-left: -180px;
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 171%;
+  color: var(--neutral-off-white);
+}
+.main__settings-notification {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.main__settings-notification-text {
+  margin-left: -180px;
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 171%;
+  color: var(--neutral-off-white);
+}
+.main__settings-privacy {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.main__settings-privacy-icon {
+  padding-left: 2px;
+}
+.main__settings-privacy-text {
+  margin-left: -200px;
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 171%;
+  color: var(--neutral-off-white);
+}
+.main__settings-data-usage {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.main__settings-data-usage-text {
+  margin-left: -180px;
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 171%;
+  color: var(--neutral-off-white);
+}
+.main__settings-help {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.main__settings-help-text {
+  margin-left: -220px;
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 171%;
+  color: var(--neutral-off-white);
+}
+.main__settings-invite-your-friends {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.main__settings-invite-your-friends-text {
+  margin-left: -130px;
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 171%;
+  color: var(--neutral-off-white);
+}/*# sourceMappingURL=more.css.map */

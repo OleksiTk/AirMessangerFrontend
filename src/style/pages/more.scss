@@ -1,0 +1,212 @@
+.more {
+  padding-block: 16px;
+  padding-inline: 8px;
+}
+
+.container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.main {
+  flex-grow: 1;
+  padding-top: 30px;
+  padding-inline: 16px;
+  padding-bottom: 100px;
+
+  &__accounts {
+    padding-bottom: 40px; // прибрати треба
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    &-icon {
+      position: relative;
+      border-radius: 50px;
+      width: 49px;
+      height: 50px;
+      background: var(--neutral-dark);
+      & svg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        fill: var(--neutral-off-white);
+      }
+    }
+    &-profile-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-left: -120px;
+      row-gap: 3px;
+      &_name {
+        font-family: var(--font-family);
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 171%;
+        color: var(--neutral-off-white);
+      }
+      &_telephone {
+        font-family: var(--font-family);
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 167%;
+        color: var(--neutral-disabled);
+      }
+    }
+  }
+
+  &__accounts-information {
+    gap: 20px;
+    padding-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    .information-profile {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      &__text {
+        margin-left: 10px;
+        font-family: var(--font-family);
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 171%;
+        color: var(--neutral-off-white);
+      }
+      &__arrow {
+        margin-left: 223px;
+      }
+    }
+    .information-chats {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      &__text {
+        margin-left: 10px;
+        font-family: var(--font-family);
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 171%;
+        color: var(--neutral-off-white);
+      }
+      &__arrow {
+        margin-left: 239px;
+      }
+    }
+  }
+  &__settings {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    row-gap: 20px;
+    &-appereance {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+
+      &-text {
+        margin-left: -180px;
+        font-family: var(--font-family);
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 171%;
+        color: var(--neutral-off-white);
+      }
+    }
+    &-notification {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+
+      &-text {
+        margin-left: -180px;
+        font-family: var(--font-family);
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 171%;
+        color: var(--neutral-off-white);
+      }
+    }
+    &-privacy {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      &-icon {
+        padding-left: 2px;
+      }
+      &-text {
+        margin-left: -200px;
+        font-family: var(--font-family);
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 171%;
+        color: var(--neutral-off-white);
+      }
+    }
+    &-data-usage {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+
+      &-text {
+        margin-left: -180px;
+        font-family: var(--font-family);
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 171%;
+        color: var(--neutral-off-white);
+      }
+    }
+    &-help {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+
+      &-text {
+        margin-left: -220px;
+        font-family: var(--font-family);
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 171%;
+        color: var(--neutral-off-white);
+      }
+    }
+    &-invite-your-friends {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+
+      &-text {
+        margin-left: -130px;
+        font-family: var(--font-family);
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 171%;
+        color: var(--neutral-off-white);
+      }
+    }
+  }
+}

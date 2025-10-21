@@ -1,0 +1,166 @@
+@import url(https://fonts.googleapis.com/css?family=Mulish:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic);
+@import url(https://fonts.googleapis.com/css?family=Lato:100,100italic,300,300italic,regular,italic,700,700italic,900,900italic);
+@import url(https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,700,700italic);
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+:root {
+  --brand-color-dark: #001a83;
+  --brand-color-default: #002de3;
+  --brand-color-dark-mode: #375fff;
+  --brand-color-light: #879fff;
+  --brand-color-background: #d2d5f9;
+  --neutral-active: #0f1828;
+  --neutral-dark: #152033;
+  --neutral-body: #1b2b48;
+  --neutral-weak: #a4a4a4;
+  --neutral-disabled: #adb5bd;
+  --neutral-line: #ededed;
+  --neutral-off-white: #f7f7fc;
+  --neutral-white: #fff;
+  --accent-danger: #e94242;
+  --accent-warning: #fdcf41;
+  --accent-success: #2cc069;
+  --accent-safe: #7bcbcf;
+
+  --font-family: "Mulish", sans-serif;
+  --second-family: "Lato", sans-serif;
+  --third-family: "PT Sans", sans-serif;
+}
+body {
+  line-height: 1;
+  background-color: var(--neutral-active);
+  transition: filter 0.5s ease;
+}
+.loader {
+  z-index: 100;
+  position: absolute;
+  top: 40%;
+  left: 48%;
+}
+@media (max-width: 760px) {
+  .loader {
+    left: 40%;
+  }
+}

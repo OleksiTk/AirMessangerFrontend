@@ -1,0 +1,327 @@
+@charset "UTF-8";
+.registration {
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--neutral-active);
+  background-size: cover; /* фон покриває всю площу */
+  background-position: center; /* фон вирівняний по центру */
+  background-repeat: no-repeat; /* не повторюється */
+  display: flex;
+  align-items: center; /* Центруємо по вертикалі */
+  justify-content: center; /* Центруємо по горизонталі */
+}
+.registration-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.registration-illustration {
+  padding-top: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.registration-illustration__text {
+  padding-top: 42px;
+  width: 380px;
+  height: 110px;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 24px;
+  text-align: center;
+  color: var(--neutral-off-white);
+}
+@media (max-width: 760px) {
+  .registration-illustration__text {
+    width: 280px;
+    height: 90px;
+  }
+}
+.registration-button {
+  display: grid;
+  gap: 18px;
+  padding-top: 126px;
+}
+.registration-button__policy {
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 171%;
+  text-align: center;
+  color: var(--neutral-off-white);
+}
+
+.stepone {
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--neutral-active);
+  background-size: cover; /* фон покриває всю площу */
+  background-position: center; /* фон вирівняний по центру */
+  background-repeat: no-repeat; /* не повторюється */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Центруємо по вертикалі */
+  justify-content: space-around; /* Центруємо по горизонталі */
+}
+.stepone__login-link {
+  margin-top: -70px;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+  color: var(--neutral-off-white);
+}
+.stepone__text {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 30px;
+  text-align: center;
+  color: var(--neutral-off-white);
+}
+.stepone__button {
+  display: grid;
+  gap: 50px;
+}
+.stepone__button-seperator {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 20px;
+  text-align: center;
+  color: var(--neutral-off-white);
+}
+
+.registrationPagesstepone {
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--neutral-active);
+  background-size: cover; /* фон покриває всю площу */
+  background-position: center; /* фон вирівняний по центру */
+  background-repeat: no-repeat; /* не повторюється */
+  display: flex;
+  justify-content: center;
+}
+.registrationPagesstepone__backButton {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  cursor: pointer;
+}
+.registrationPagesstepone__block {
+  display: flex;
+  align-items: center; /* Центруємо по вертикалі */
+  justify-content: space-between; /* Центруємо по горизонталі */
+  flex-direction: column;
+}
+.registrationPagesstepone__text {
+  font-family: var(--font-family);
+  width: 295px;
+  text-align: center;
+  color: var(--neutral-off-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 80px;
+}
+.registrationPagesstepone__text-down {
+  font-weight: 400;
+  font-size: 14px;
+}
+.registrationPagesstepone__text-upper {
+  font-weight: 700;
+  font-size: 24px;
+}
+.registrationPagesstepone__input {
+  display: flex;
+  align-items: center; /* Центруємо по вертикалі */
+  justify-content: center; /* Центруємо по горизонталі */
+  flex-direction: row;
+}
+.registrationPagesstepone__button {
+  padding-bottom: 50px;
+}
+
+.registrationpagessteptwotelephone {
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--neutral-active);
+  background-size: cover; /* фон покриває всю площу */
+  background-position: center; /* фон вирівняний по центру */
+  background-repeat: no-repeat; /* не повторюється */
+  display: flex;
+  justify-content: center;
+}
+.registrationpagessteptwotelephone__backButton {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  cursor: pointer;
+}
+.registrationpagessteptwotelephone__mainBlock {
+  display: flex;
+  align-items: center; /* Центруємо по вертикалі */
+  justify-content: space-between; /* Центруємо по горизонталі */
+  flex-direction: column;
+}
+.registrationpagessteptwotelephone__mainBlock-text {
+  font-family: var(--font-family);
+  width: 295px;
+  text-align: center;
+  color: var(--neutral-off-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 80px;
+}
+.registrationpagessteptwotelephone__mainBlock-text-down {
+  font-weight: 400;
+  font-size: 14px;
+}
+.registrationpagessteptwotelephone__mainBlock-text-upper {
+  font-weight: 700;
+  font-size: 24px;
+}
+.registrationpagessteptwotelephone__mainBlock-input-form {
+  display: flex;
+  flex-direction: row;
+  align-items: center; /* Центруємо по вертикалі */
+  justify-content: center; /* Центруємо по горизонталі */
+  gap: 40px;
+}
+.registrationpagessteptwotelephone__mainBlock-input-dot {
+  background-color: var(--neutral-body);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 32px;
+  text-align: center;
+  color: var(--neutral-off-white);
+}
+.registrationpagessteptwotelephone__mainBlock-button {
+  padding-bottom: 50px;
+}
+.registrationpagessteptwotelephone__mainBlock-button-resend {
+  border: none;
+  background-color: transparent;
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 175%;
+  text-align: center;
+  color: var(--neutral-off-white);
+}
+
+.input-transparent {
+  background-color: transparent;
+  border: none;
+}
+
+.registrationpagesaccount {
+  padding: 10px;
+}
+.registrationpagesaccount-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+.registrationpagesaccount__backBlock {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+.registrationpagesaccount__backBlock-text {
+  padding-top: 7px;
+  padding-left: 40px;
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 167%;
+  color: var(--neutral-off-white);
+}
+.registrationpagesaccount__backBlock-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  cursor: pointer;
+}
+.registrationpagesaccount__mainBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+.registrationpagesaccount__mainBlock-inputs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px; /* Застосовуємо gap тут */
+}
+.registrationpagesaccount__mainBlock-avatar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+}
+.registrationpagesaccount__mainBlock-avatar-img {
+  background: var(--neutral-dark);
+  border-radius: 50px;
+  width: 100px;
+  height: 100px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  cursor: pointer;
+  position: relative;
+}
+.registrationpagesaccount__mainBlock-avatar-img-svg {
+  position: absolute;
+  top: 25%;
+  left: 25%;
+}
+.registrationpagesaccount__mainBlock-avatar-plus {
+  position: absolute;
+  top: 72%;
+  left: 77%;
+}
+.registrationpagesaccount__buttonSubmit {
+  padding-bottom: 50px;
+}
+
+.registration-email {
+  padding: 10px;
+}
+.registration-email__block {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+.registration-email__form {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  padding-top: 300px;
+}
+.registration-email__submit-form {
+  padding-bottom: 20px;
+}
+
+.active-blur {
+  background-color: transparent;
+  filter: blur(5px);
+}/*# sourceMappingURL=registrationPages.css.map */
