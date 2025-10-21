@@ -1,5 +1,6 @@
 // frontend/src/api/authApi.ts
-const API_BASE_URL = "https://airmessangerbackend-production.up.railway.app";
+const API_BASE_URL =
+  "https://airmessangerbackend-production.up.railway.app/api";
 
 export const authApi = {
   register: async (email: string, password: string, name_profile: string) => {
