@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "../../style/pages/header.css";
 import { userInfo } from "../../api/userInfo";
 import { contactsApi } from "../../api/contacts";
@@ -10,7 +10,6 @@ function Header({ Pages }: { Pages: string }) {
   }, [Pages]);
   const [activePage, setActivePage] = useState("");
   const [whatContent, setWhatContent] = useState("");
-  const [cross, setCross] = useState(false);
   const [name, setName] = useState("");
   const [modalWindow, setModalWindow] = useState(false);
   const [findName, setFindName] = useState<any[]>([]);

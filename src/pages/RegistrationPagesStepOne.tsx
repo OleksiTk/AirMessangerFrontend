@@ -1,4 +1,3 @@
-import React from "react";
 import { ButtonBlue } from "../components/ui/ButtonBlue";
 import { useNavigate } from "react-router-dom";
 

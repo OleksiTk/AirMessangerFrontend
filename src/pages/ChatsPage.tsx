@@ -1,4 +1,3 @@
-import React from "react";
 import "../style/pages/chats.css";
 import "../style/pages/header.css";
 import "../style/pages/navbar.css";

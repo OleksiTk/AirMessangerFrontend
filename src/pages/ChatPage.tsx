@@ -39,7 +39,7 @@ let socket: Socket | null = null;
 
 const getSocket = () => {
   if (!socket) {
-    socket = io("http://localhost:3000", {
+    socket = io(import.meta.env.VITE_API_BASE_URL, {
       transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionDelay: 1000,
@@ -62,7 +62,7 @@ function ChatPage() {
   const [isConnected, setIsConnected] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<number | null>(null);
 
   const currentUserProfile = localStorage.getItem("user");
   const currentUserGoogleId = localStorage.getItem("googleId");

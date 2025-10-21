@@ -1,5 +1,5 @@
 import { Container } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SearchInput from "./SearchInput";
 import { useNavigate } from "react-router-dom";
 import { contactsApi } from "../../api/contacts";

@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NavBar from "../components/ui/NavBar";
-import PeopleContacts from "../components/ui/PeopleContacts";
 import Header from "../components/ui/Header";
 import "../style/pages/more.css";
 import "../style/pages/header.css";

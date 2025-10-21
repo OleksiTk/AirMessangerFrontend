@@ -1,5 +1,4 @@
 import { ButtonBlue } from "../components/ui/ButtonBlue";
-import React from "react";
 import "../style/pages/registrationPages.css";
 import { useNavigate } from "react-router-dom";
 export const RegistrationPages = () => {

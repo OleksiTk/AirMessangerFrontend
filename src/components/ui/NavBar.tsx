@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "../../style/pages/navbar.css";
 import { useNavigate } from "react-router-dom";
 function NavBar({ Pages }: { Pages: string }) {

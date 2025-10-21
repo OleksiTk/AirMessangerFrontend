@@ -1,10 +1,9 @@
 import { TextField } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { ButtonBlue } from "../components/ui/ButtonBlue";
-import axios from "axios";
-import { authApi } from "../api/authApi";
+
 import { userInfo } from "../api/userInfo";
 function RegistrationPagesAccount() {
   const [avatar, setAvatar] = useState<string | null>(null);

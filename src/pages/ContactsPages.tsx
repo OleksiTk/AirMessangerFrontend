@@ -1,4 +1,3 @@
-import React from "react";
 import Header from "../components/ui/Header";
 import PeopleContacts from "../components/ui/PeopleContacts";
 import NavBar from "../components/ui/NavBar";
