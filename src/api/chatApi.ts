@@ -5,8 +5,9 @@ export const chatApi = {
   // Отримати чат за name_profile контакту
   async getChatWithUser(profileName: string) {
     try {
+      let googleId = localStorage.getItem("googleId");
       const res = await fetch(
-        `${API_BASE_URL}/chat?profileName=${profileName}`,
+        `${API_BASE_URL}/chat?profileName=${profileName}&googleId=${googleId}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
