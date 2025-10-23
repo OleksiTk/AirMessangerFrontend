@@ -25,6 +25,7 @@ function PeopleContacts({ Pages }: { Pages: string }) {
   const navigate = useNavigate();
   useEffect(() => {
     setActivePage(Pages);
+    console.log("ця умова робить");
 
     // Встановлення підключення та слухання подій сокета
     socket.on("connect", () => {
@@ -49,7 +50,7 @@ function PeopleContacts({ Pages }: { Pages: string }) {
       socket.off("contacts_new_add");
       socket.off("disconnect");
     };
-  }, [Pages]);
+  }, [getContacts]);
   useEffect(() => {
     setActivePage(Pages);
   }, [Pages]);
@@ -120,7 +121,10 @@ function PeopleContacts({ Pages }: { Pages: string }) {
           <div className="main-groups__icon">
             <img
               className="main-groups__icon-avatar"
-              src={element.avatar || ""}
+              src={
+                element.avatar ||
+                "https://static.vecteezy.com/system/resources/previews/060/605/418/non_2x/default-avatar-profile-icon-social-media-user-free-vector.jpg"
+              }
               alt="avatar"
             />
             <div className="main-groups__icon-active">

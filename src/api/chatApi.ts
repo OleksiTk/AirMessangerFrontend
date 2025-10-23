@@ -5,9 +5,8 @@ export const chatApi = {
   // Отримати чат за name_profile контакту
   async getChatWithUser(profileName: string) {
     try {
-      let googleId = localStorage.getItem("googleId");
       const res = await fetch(
-        `${API_BASE_URL}/chat?profileName=${profileName}&googleId=${googleId}`,
+        `${API_BASE_URL}/api/chat?profileName=${profileName}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -29,7 +28,7 @@ export const chatApi = {
   // Отримати всі чати користувача
   async getUserChats() {
     try {
-      const res = await fetch(`${API_BASE_URL}/chat/my-chats`, {
+      const res = await fetch(`${API_BASE_URL}/api/chat/my-chats`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -50,7 +49,7 @@ export const chatApi = {
   async getChatMessages(chatId: number, limit = 50, offset = 0) {
     try {
       const res = await fetch(
-        `${API_BASE_URL}/chat/${chatId}/messages?limit=${limit}&offset=${offset}`,
+        `${API_BASE_URL}/api/chat/${chatId}/messages?limit=${limit}&offset=${offset}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -72,7 +71,7 @@ export const chatApi = {
   // Надіслати повідомлення
   async sendMessage(chatId: number, content: string) {
     try {
-      const res = await fetch(`${API_BASE_URL}/chat/${chatId}/message`, {
+      const res = await fetch(`${API_BASE_URL}/api/chat/${chatId}/message`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

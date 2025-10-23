@@ -2,7 +2,7 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const authApi = {
   register: async (email: string, password: string, name_profile: string) => {
-    const res = await fetch(`${API_BASE_URL}/auth/register`, {
+    const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password, name_profile }),
@@ -12,7 +12,7 @@ export const authApi = {
   },
 
   login: async (email: string, password: string) => {
-    const res = await fetch(`${API_BASE_URL}/auth/login`, {
+    const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -22,7 +22,7 @@ export const authApi = {
   },
 
   refreshToken: async () => {
-    const res = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
+    const res = await fetch(`${API_BASE_URL}/api/auth/refresh-token`, {
       method: "POST",
       credentials: "include",
     });
@@ -30,7 +30,7 @@ export const authApi = {
   },
 
   logout: async () => {
-    const res = await fetch(`${API_BASE_URL}/auth/logout`, {
+    const res = await fetch(`${API_BASE_URL}/api/auth/logout`, {
       method: "POST",
       credentials: "include",
     });
@@ -41,12 +41,12 @@ export const authApi = {
 // Функція для отримання постів
 export const postsApi = {
   getAll: async () => {
-    const res = await fetch(`${API_BASE_URL}/posts`);
+    const res = await fetch(`${API_BASE_URL}/api/posts`);
     return res.json();
   },
 
   create: async (title: string, content: string, accessToken: string) => {
-    const res = await fetch(`${API_BASE_URL}/posts`, {
+    const res = await fetch(`${API_BASE_URL}/api/posts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

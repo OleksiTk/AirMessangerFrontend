@@ -19,7 +19,6 @@ function RegistrationPagesStepOneEmail() {
       if (registerAccount) {
         console.log(registerAccount);
         setLoader(false);
-        localStorage.setItem("googleId", registerAccount.googleId);
         navigate("/registrationStepAccount");
       }
     } catch (error) {

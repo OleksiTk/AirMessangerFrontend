@@ -36,10 +36,13 @@ interface Chat {
 }
 
 let socket: Socket | null = null;
+const baseUrl =
+  import.meta.env.VITE_API_BASE_URL?.replace("/api", "") ||
+  "http://localhost:3000";
 
 const getSocket = () => {
   if (!socket) {
-    socket = io(import.meta.env.VITE_API_BASE_URL, {
+    socket = io(baseUrl, {
       transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionDelay: 1000,
@@ -64,7 +67,7 @@ function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<number | null>(null);
 
-  const currentUserProfile = localStorage.getItem("user");
+  const [currentUserProfile, setCurrentUserProfile] = useState("");
   const currentUserGoogleId = localStorage.getItem("googleId");
 
   // Автоскрол
@@ -85,6 +88,7 @@ function ChatPage() {
         setLoading(true);
         const chatData = await chatApi.getChatWithUser(profileName);
         setChat(chatData);
+        setCurrentUserProfile(chatData.participant1.name_profile);
         setMessages(chatData.messages || []);
         console.log("Chat loaded:", chatData);
       } catch (err) {
@@ -101,9 +105,25 @@ function ChatPage() {
 
   // Socket.IO підключення
   useEffect(() => {
-    if (!chat) {
-      return console.log("dont have chat");
+    console.log("Socket setup check:", {
+      hasChat: !!chat,
+      chatId: chat?.id,
+      hasGoogleId: !!currentUserGoogleId,
+      hasProfile: !!currentUserProfile,
+      socketConnected: currentSocket.connected,
+    });
+
+    if (!chat?.id || !currentUserGoogleId || !currentUserProfile) {
+      console.log("⏳ Waiting for complete chat data...", {
+        chat: chat?.id,
+        googleId: currentUserGoogleId,
+        profile: currentUserProfile,
+      });
+      return;
     }
+
+    console.log("Initializing socket handlers for chat:", chat.id);
+
     // Підключаємось до сокета
     const handleConnect = () => {
       setIsConnected(true);
@@ -126,7 +146,7 @@ function ChatPage() {
     const handleReceiveMessage = (message: Message) => {
       console.log("New message received:", message);
       setMessages((prev) => {
-        // ✅ Перевіряємо чи повідомлення вже є
+        // Перевіряємо чи повідомлення вже є
         if (prev.some((msg) => msg.id === message.id)) {
           return prev;
         }
@@ -142,7 +162,7 @@ function ChatPage() {
       if (data.name_profile !== currentUserProfile) {
         setIsTyping(data.isTyping);
 
-        // ✅ Автоматично ховаємо "typing..." через 3 секунди
+        // Автоматично ховаємо "typing..." через 3 секунди
         if (data.isTyping && typingTimeoutRef.current) {
           clearTimeout(typingTimeoutRef.current);
         }
@@ -173,7 +193,7 @@ function ChatPage() {
       );
     };
 
-    // ✅ Реєструємо всі обробники
+    // Реєструємо всі обробники
     currentSocket.on("connect", handleConnect);
     currentSocket.on("disconnect", handleDisconnect);
     currentSocket.on("receive_message", handleReceiveMessage);
@@ -182,13 +202,16 @@ function ChatPage() {
     currentSocket.on("user_left", handleUserLeft);
     currentSocket.on("message_read", handleMessageRead);
 
-    // ✅ Якщо вже підключені
+    // Якщо вже підключені
     if (currentSocket.connected) {
       handleConnect();
     }
 
+    // Cleanup function
     return () => {
-      // ✅ Видаляємо ВСІ обробники при unmount
+      console.log("Cleaning up socket handlers");
+
+      // Видаляємо ВСІ обробники при unmount
       currentSocket.off("connect", handleConnect);
       currentSocket.off("disconnect", handleDisconnect);
       currentSocket.off("receive_message", handleReceiveMessage);
@@ -197,22 +220,22 @@ function ChatPage() {
       currentSocket.off("user_left", handleUserLeft);
       currentSocket.off("message_read", handleMessageRead);
 
-      if (chat) {
-        currentSocket.emit("leave_chat", {
-          chatId: chat.id,
-          name_profile: currentUserProfile,
-        });
-      }
+      currentSocket.emit("leave_chat", {
+        chatId: chat.id,
+        name_profile: currentUserProfile,
+      });
 
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
     };
-  }, [chat, currentUserGoogleId, currentUserProfile]);
+  }, [chat]);
 
   // Надіслати повідомлення
   const handleSendMessage = () => {
     if (!newMessage.trim() || !chat || !currentUserGoogleId) {
+      console.log("dss");
+
       return;
     }
 
