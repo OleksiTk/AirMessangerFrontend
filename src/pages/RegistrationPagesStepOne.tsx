@@ -1,7 +1,6 @@
-import { ButtonBlue } from "../components/ui/ButtonBlue";
 import { useNavigate } from "react-router-dom";
 import "../style/pages/registrationform.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CircularIndeterminate from "../components/ui/CircularIndeterminate";
 import { authApi } from "../api/authApi";
 import { ToastContainer, toast } from "react-toastify";
@@ -158,7 +157,7 @@ const RegistrationPagesStepOne = () => {
                 setSingUp(true);
                 setSingIn(false);
               }}
-              className={`btn-enregistrer ${signUp == true ? "" : "active"}`}
+              className={`btn-enregistrer ${signIn == false ? "" : "active"}`}
             >
               <h2>SIGN UP</h2>
             </a>
