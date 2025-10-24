@@ -9,7 +9,7 @@ export const RegistrationPages = () => {
         <div className="registration-illustration">
           <img
             className="registration-illustration__img"
-            src="src/assets/Illustration.svg"
+            src="/assets/Illustration.svg"
             alt="people messaging"
           />
           <p className="registration-illustration__text">

@@ -154,10 +154,16 @@ body {
   transition: filter 0.5s ease;
 }
 .loader {
-  z-index: 100;
-  position: absolute;
-  top: 40%;
-  left: 48%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); /* Напівпрозорий фон */
+  z-index: 9999; /* Щоб був поверх всього */
 }
 @media (max-width: 760px) {
   .loader {
