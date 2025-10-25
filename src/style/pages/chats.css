@@ -1,11 +1,13 @@
 .chats {
-  padding-block: 16px;
   padding-inline: 8px;
+  overflow: hidden;
+  height: 100vh;
 }
 
 .container {
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -15,18 +17,27 @@
   flex-grow: 1;
   padding-top: 30px;
   padding-inline: 16px;
-  padding-bottom: 200px;
+  overflow: hidden;
+  padding-bottom: 30px;
+  position: relative;
 }
 .main__chats {
   display: flex;
   flex-direction: column;
+  align-items: center;
   row-gap: 10px;
+}
+.main__chats-input-search {
+  display: flex;
+  justify-content: center;
 }
 .main__story {
   display: flex;
   flex-direction: row;
   row-gap: 16px;
   padding-bottom: 30px;
+  position: relative;
+  z-index: 3;
 }
 .main__story-block {
   display: flex;
@@ -65,9 +76,9 @@
 }
 .main__story-separator {
   position: absolute;
-  top: 19%;
-  left: 0;
-  width: 100%;
+  top: 80%;
+  left: -10%;
+  width: 200%;
   height: 2px;
   background-color: var(--neutral-dark);
 }
@@ -86,7 +97,12 @@
   align-items: center;
   justify-content: space-between;
   position: relative;
-  gap: 20px;
+  width: 100%;
+  padding: 12px 0;
+}
+.main-groups__icon {
+  position: relative;
+  flex-shrink: 0;
 }
 .main-groups__icon-avatar {
   width: 48px;
@@ -96,16 +112,18 @@
 .main-groups__icon-active {
   position: absolute;
   top: -5%;
-  left: 12%;
+  left: 70%;
 }
 .main-groups__information {
-  margin-left: -120px;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin-left: 12px;
   row-gap: 3px;
 }
 .main-groups__information__name {
+  padding-left: 20px;
   font-family: var(--font-family);
   font-weight: 600;
   font-size: 14px;
@@ -113,6 +131,7 @@
   color: var(--neutral-off-white);
 }
 .main-groups__information__lastmessage {
+  padding-left: 20px;
   font-family: var(--font-family);
   font-weight: 400;
   font-size: 12px;
@@ -122,9 +141,10 @@
 .main-groups__notifications {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
+  justify-content: center;
+  align-items: flex-end;
   row-gap: 10px;
+  flex-shrink: 0;
 }
 .main-notifications__days {
   font-family: var(--font-family);
@@ -137,7 +157,7 @@
 .main-notifications__count {
   border-radius: 40px;
   padding: 2px 6px;
-  width: 8px;
+  min-width: 20px;
   height: 15px;
   background: var(--brand-color-background);
   font-family: var(--font-family);
@@ -150,5 +170,5 @@
 .main__chats-groups {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  width: 100%;
 }/*# sourceMappingURL=chats.css.map */

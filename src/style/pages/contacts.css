@@ -1,4 +1,5 @@
 .contacts {
-  padding-block: 16px;
   padding-inline: 8px;
+  overflow: hidden;
+  height: 100vh;
 }/*# sourceMappingURL=contacts.css.map */

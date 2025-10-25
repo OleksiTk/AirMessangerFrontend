@@ -30,9 +30,11 @@ const SearchInput = () => {
       }}
       sx={{
         marginBottom: 2,
+        maxWidth: "500px", // Збільшено ширину
+        width: "100%", // Додано
         "& .MuiOutlinedInput-root": {
           borderRadius: "4px",
-          width: "327px",
+          width: "527px",
           height: "44px",
           backgroundColor: "var(--neutral-dark)",
           color: "var(--neutral-disabled)",

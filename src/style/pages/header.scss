@@ -2,7 +2,10 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   padding-inline: 16px;
+  padding-top: 20px;
+  position: relative;
   &__text {
     font-family: var(--font-family);
     font-weight: 600;
@@ -10,41 +13,49 @@
     line-height: 167%;
     color: var(--neutral-off-white);
   }
+  &__add-chats {
+  }
   .contact-item {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding-inline: 20px;
     padding-top: 20px;
-    // width: 250px;
+    width: 80%;
     // height: 350px;
     overflow-y: auto;
     &__block {
       display: flex;
       flex-direction: row;
-      justify-content: flex-start;
+      justify-content: space-between;
       align-items: center;
-      row-gap: 10px;
+      gap: 10px;
       &-img {
         width: 50px;
         height: 50px;
         border-radius: 50px;
+        flex-shrink: 0;
       }
       &-name {
-        padding-left: 20px;
         font-family: var(--font-family);
         font-weight: 600;
         font-size: 18px;
         line-height: 167%;
         color: var(--neutral-off-white);
+        flex-grow: 1;
+        padding-left: 20px;
       }
       &-add {
-        padding-left: 140px;
         font-family: var(--font-family);
         font-weight: 600;
         font-size: 28px;
         line-height: 167%;
         color: var(--neutral-off-white);
+        cursor: pointer; // Додано для UX
+        flex-shrink: 0; // Щоб кнопка не стискалася
+
+        &:hover {
+          opacity: 0.8; // Ефект при наведенні
+        }
       }
     }
   }
@@ -52,34 +63,92 @@
 .modal-window {
   position: absolute;
   z-index: 100;
-  top: 10%;
-  left: 10%;
+  top: 100%;
+  left: 15%;
   background-color: var(--neutral-body);
-  width: 300px;
+  width: min(1000px, 90vw);
+  max-width: 1000px;
   height: 500px;
-
   border-radius: 10px;
-  &__img {
+
+  &__search {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-end;
+    align-items: center; // Додано для центрування
+  }
+
+  &__img {
+    display: flex;
+    justify-content: flex-end; // Кнопка закриття справа
+    width: 100%; // Додано
+    padding: 10px;
+
     &-src {
       width: 30px;
       height: 30px;
+      cursor: pointer; // Додано для UX
     }
   }
+
   &__input {
     border-radius: 4px;
     padding: 6px 8px;
-    width: 327px;
+    width: 80%; // Спрощено
+    max-width: 800px; // Додано максимальну ширину
     height: 36px;
     background: var(--neutral-dark);
-    width: 80%;
     margin-top: 20px;
-    margin-left: 20px;
     border: none;
     color: var(--brand-color-background);
+
+    &::placeholder {
+      color: var(--neutral-disabled);
+    }
+
+    &:focus {
+      outline: 2px solid var(--brand-color-background);
+    }
+  }
+}
+
+.contacts-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center; // Центрування списку контактів
+  width: 100%;
+  margin-top: 20px;
+  overflow-y: auto; // Додано скрол якщо багато контактів
+  max-height: 350px; // Обмеження висоти
+}
+// Медіа-запити для різних екранів
+@media (max-width: 1200px) {
+  .modal-window {
+    width: 85vw;
+    left: 10%;
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-window {
+    width: 90vw;
+    height: 400px;
+    left: 5%;
+    &__input {
+      width: calc(100% - 40px);
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-window {
+    width: 95vw;
+    height: 350px;
+    left: 0;
+    &__input {
+      width: calc(100% - 30px);
+      margin-left: 15px;
+      margin-right: 15px;
+    }
   }
 }
 .active-blur {

@@ -2,6 +2,7 @@ import Header from "../components/ui/Header";
 import PeopleContacts from "../components/ui/PeopleContacts";
 import NavBar from "../components/ui/NavBar";
 import "../style/pages/contacts.css";
+
 function ContactsPages() {
   return (
     <div className="contacts">

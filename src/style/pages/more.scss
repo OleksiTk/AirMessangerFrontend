@@ -1,6 +1,7 @@
 .more {
-  padding-block: 16px;
   padding-inline: 8px;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .container {
@@ -16,14 +17,17 @@
   padding-top: 30px;
   padding-inline: 16px;
   padding-bottom: 100px;
-
+  overflow-y: auto;
   &__accounts {
     padding-bottom: 40px; // прибрати треба
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    flex: 1;
     &-icon {
+      flex-shrink: 0;
       position: relative;
       border-radius: 50px;
       width: 49px;
@@ -42,8 +46,9 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      margin-left: -120px;
       row-gap: 3px;
+      padding-left: 10px;
+      flex-grow: 1;
       &_name {
         font-family: var(--font-family);
         font-weight: 600;
@@ -59,9 +64,14 @@
         color: var(--neutral-disabled);
       }
     }
+    &-more-arrow {
+      flex-shrink: 0;
+    }
   }
 
   &__accounts-information {
+    padding-left: 10px;
+    flex: 1;
     gap: 20px;
     padding-bottom: 40px;
     display: flex;
@@ -75,6 +85,7 @@
       align-items: center;
 
       &__text {
+        flex-grow: 1;
         margin-left: 10px;
         font-family: var(--font-family);
         font-weight: 600;
@@ -83,7 +94,7 @@
         color: var(--neutral-off-white);
       }
       &__arrow {
-        margin-left: 223px;
+        padding-right: 10px;
       }
     }
     .information-chats {
@@ -92,6 +103,7 @@
       flex-direction: row;
       align-items: center;
       &__text {
+        flex-grow: 1;
         margin-left: 10px;
         font-family: var(--font-family);
         font-weight: 600;
@@ -100,12 +112,14 @@
         color: var(--neutral-off-white);
       }
       &__arrow {
-        margin-left: 239px;
+        padding-right: 10px;
       }
     }
   }
   &__settings {
+    padding-left: 10px;
     display: flex;
+    flex: 1;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
@@ -116,14 +130,21 @@
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-
+      flex: 1;
       &-text {
-        margin-left: -180px;
+        padding-left: 10px;
+        flex-grow: 1;
         font-family: var(--font-family);
         font-weight: 600;
         font-size: 14px;
         line-height: 171%;
         color: var(--neutral-off-white);
+      }
+      &-icon {
+        flex-shrink: 0;
+      }
+      &-arrow {
+        padding-right: 3px;
       }
     }
     &-notification {
@@ -134,12 +155,16 @@
       justify-content: space-between;
 
       &-text {
-        margin-left: -180px;
+        padding-left: 10px;
+        flex-grow: 1;
         font-family: var(--font-family);
         font-weight: 600;
         font-size: 14px;
         line-height: 171%;
         color: var(--neutral-off-white);
+      }
+      &-arrow {
+        padding-right: 3px;
       }
     }
     &-privacy {
@@ -149,15 +174,18 @@
       align-items: center;
       justify-content: space-between;
       &-icon {
-        padding-left: 2px;
       }
       &-text {
-        margin-left: -200px;
+        padding-left: 15px;
+        flex-grow: 1;
         font-family: var(--font-family);
         font-weight: 600;
         font-size: 14px;
         line-height: 171%;
         color: var(--neutral-off-white);
+      }
+      &-arrow {
+        padding-right: 3px;
       }
     }
     &-data-usage {
@@ -168,12 +196,16 @@
       justify-content: space-between;
 
       &-text {
-        margin-left: -180px;
+        padding-left: 10px;
+        flex-grow: 1;
         font-family: var(--font-family);
         font-weight: 600;
         font-size: 14px;
         line-height: 171%;
         color: var(--neutral-off-white);
+      }
+      &-arrow {
+        padding-right: 3px;
       }
     }
     &-help {
@@ -182,9 +214,12 @@
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-
+      &-arrow {
+        padding-right: 3px;
+      }
       &-text {
-        margin-left: -220px;
+        padding-left: 10px;
+        flex-grow: 1;
         font-family: var(--font-family);
         font-weight: 600;
         font-size: 14px;
@@ -198,9 +233,12 @@
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-
+      &-arrow {
+        padding-right: 3px;
+      }
       &-text {
-        margin-left: -130px;
+        flex-grow: 1;
+        padding-left: 10px;
         font-family: var(--font-family);
         font-weight: 600;
         font-size: 14px;

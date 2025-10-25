@@ -1,11 +1,13 @@
 .chats {
-  padding-block: 16px;
   padding-inline: 8px;
+  overflow: hidden;
+  height: 100vh; // Змінено з overflow-y: hidden
 }
 
 .container {
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -15,17 +17,26 @@
   flex-grow: 1;
   padding-top: 30px;
   padding-inline: 16px;
-  padding-bottom: 200px;
+  overflow: hidden; // Повністю без скролу
+  padding-bottom: 30px; // Зменшено padding
+  position: relative;
   &__chats {
     display: flex;
     flex-direction: column;
+    align-items: center;
     row-gap: 10px;
+    &-input-search {
+      display: flex;
+      justify-content: center;
+    }
   }
   &__story {
     display: flex;
     flex-direction: row;
     row-gap: 16px;
     padding-bottom: 30px;
+    position: relative;
+    z-index: 3;
     &-block {
       display: flex;
       flex-direction: column;
@@ -63,9 +74,9 @@
     }
     &-separator {
       position: absolute;
-      top: 19%;
-      left: 0;
-      width: 100%;
+      top: 80%;
+      left: -10%;
+      width: 200%;
       height: 2px;
       background-color: var(--neutral-dark);
     }
@@ -83,34 +94,48 @@
   &-groups {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: center; // Змінено з flex-start
     justify-content: space-between;
     position: relative;
-    gap: 20px;
+    width: 100%; // Додано
+    padding: 12px 0; // Додано відступи
+
+    &__icon {
+      position: relative;
+      flex-shrink: 0; // Додано
+    }
+
     &__icon-avatar {
       width: 48px;
       height: 48px;
       border-radius: 20px;
     }
+
     &__icon-active {
       position: absolute;
       top: -5%;
-      left: 12%;
+      left: 70%; // Змінено позицію
     }
+
     &__information {
-      margin-left: -120px;
+      flex-grow: 1; // Додано
       display: flex;
       flex-direction: column;
       justify-content: center;
+      margin-left: 12px; // Змінено з -120px
       row-gap: 3px;
+
       &__name {
+        padding-left: 20px;
         font-family: var(--font-family);
         font-weight: 600;
         font-size: 14px;
         line-height: 171%;
         color: var(--neutral-off-white);
       }
+
       &__lastmessage {
+        padding-left: 20px;
         font-family: var(--font-family);
         font-weight: 400;
         font-size: 12px;
@@ -118,14 +143,17 @@
         color: var(--neutral-disabled);
       }
     }
+
     &__notifications {
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
+      justify-content: center; // Змінено з flex-end
+      align-items: flex-end;
       row-gap: 10px;
+      flex-shrink: 0; // Додано
     }
   }
+
   &-notifications {
     &__days {
       font-family: var(--font-family);
@@ -135,10 +163,11 @@
       text-align: right;
       color: var(--neutral-line);
     }
+
     &__count {
       border-radius: 40px;
       padding: 2px 6px;
-      width: 8px;
+      min-width: 20px; // Змінено з width: 8px
       height: 15px;
       background: var(--brand-color-background);
       font-family: var(--font-family);
@@ -149,9 +178,10 @@
       color: var(--brand-color-dark);
     }
   }
+
   &__chats-groups {
     display: flex;
-    flex-direction: row;
-    align-items: flex-start;
+    flex-direction: row; // Змінено з row
+    width: 100%; // Додано
   }
 }

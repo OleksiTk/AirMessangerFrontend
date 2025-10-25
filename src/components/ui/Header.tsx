@@ -76,47 +76,51 @@ function Header({ Pages }: { Pages: string }) {
           <div>
             {modalWindow == true ? (
               <div className="modal-window">
-                <div onClick={HabdleModalWindow} className="modal-window__img">
-                  <img
-                    src="src/assets/delete.png"
-                    className="modal-window__img-src"
-                    alt=""
+                <div className="modal-window__search">
+                  <div
+                    onClick={HabdleModalWindow}
+                    className="modal-window__img"
+                  >
+                    <img
+                      src="/assets/delete.png"
+                      className="modal-window__img-src"
+                      alt=""
+                    />
+                  </div>
+
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    type="text"
+                    className="modal-window__input"
                   />
                 </div>
 
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  type="text"
-                  className="modal-window__input"
-                />
                 <div className="contacts-form">
-                  {findName.length > 0 ? (
-                    findName.map((user) => (
-                      <div key={user.id} className="contact-item">
-                        <div className="contact-item__block">
-                          <img
-                            src={user.avatar}
-                            alt={user.name_profile}
-                            className="contact-item__block-img"
-                          />
-                          <span className="contact-item__block-name">
-                            {user.name_profile}
-                          </span>
-                          <div
-                            onClick={() => {
-                              HandlerAddConctas(user.name_profile);
-                            }}
-                            className="contact-item__block-add"
-                          >
-                            +
+                  {findName.length > 0
+                    ? findName.map((user) => (
+                        <div key={user.id} className="contact-item">
+                          <div className="contact-item__block">
+                            <img
+                              src={user.avatar}
+                              alt={user.name_profile}
+                              className="contact-item__block-img"
+                            />
+                            <span className="contact-item__block-name">
+                              {user.name_profile}
+                            </span>
+                            <div
+                              onClick={() => {
+                                HandlerAddConctas(user.name_profile);
+                              }}
+                              className="contact-item__block-add"
+                            >
+                              +
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="contact-item">Контакти не знайдені</div>
-                  )}
+                      ))
+                    : ""}
                 </div>
               </div>
             ) : (
