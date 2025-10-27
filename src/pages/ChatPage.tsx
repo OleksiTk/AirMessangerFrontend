@@ -1,61 +1,32 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import io, { Socket } from "socket.io-client";
 import "../style/pages/chat.css";
 import { chatApi } from "../api/chatApi";
+import { socket } from "../socket/socket";
 
 interface Message {
-  id: number;
+  chatId: string;
   content: string;
-  author: {
-    id: number;
-    name_profile: string;
-    avatar: string;
-  };
-  authorGoogleId: string;
   createdAt: string;
+  id: number;
   isRead: boolean;
+  senderId: string;
 }
 
 interface Chat {
   id: number;
-  participant1: {
+  isGroup: Boolean;
+  participants: {
     id: number;
-    name_profile: string;
-    avatar: string;
-    name: string;
-    googleId: string;
-  };
-  participant2: {
-    id: number;
-    name_profile: string;
-    avatar: string;
-    name: string;
-    googleId: string;
+    chatId: string;
+    userId: string;
   };
 }
-
-let socket: Socket | null = null;
-const baseUrl =
-  import.meta.env.VITE_API_BASE_URL?.replace("/api", "") ||
-  "http://localhost:3000";
-
-const getSocket = () => {
-  if (!socket) {
-    socket = io(baseUrl, {
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionAttempts: 5,
-    });
-  }
-  return socket;
-};
 
 function ChatPage() {
   const { profileName } = useParams<{ profileName: string }>();
   const navigate = useNavigate();
-  const currentSocket = getSocket();
+  const currentSocket = socket;
 
   const [chat, setChat] = useState<Chat | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -88,7 +59,7 @@ function ChatPage() {
         setLoading(true);
         const chatData = await chatApi.getChatWithUser(profileName);
         setChat(chatData);
-        setCurrentUserProfile(chatData.participant1.name_profile);
+        setCurrentUserProfile("lol");
         setMessages(chatData.messages || []);
         console.log("Chat loaded:", chatData);
       } catch (err) {
@@ -112,6 +83,7 @@ function ChatPage() {
       hasProfile: !!currentUserProfile,
       socketConnected: currentSocket.connected,
     });
+    console.log("chats id", chat?.id);
 
     if (!chat?.id || !currentUserGoogleId || !currentUserProfile) {
       console.log("⏳ Waiting for complete chat data...", {
@@ -286,11 +258,6 @@ function ChatPage() {
     }
   };
 
-  const opponent =
-    chat?.participant1.name_profile === currentUserProfile
-      ? chat?.participant2
-      : chat?.participant1;
-
   if (loading) {
     return (
       <div className="chat">
@@ -338,7 +305,7 @@ function ChatPage() {
             </svg>
           </div>
           <div className="header-chat__name">
-            {opponent?.name || opponent?.name_profile}
+            lol{" "}
             <span
               style={{
                 marginLeft: "10px",
@@ -374,21 +341,21 @@ function ChatPage() {
               <div
                 key={message.id}
                 className={
-                  message.authorGoogleId === currentUserGoogleId
+                  message.senderId === currentUserGoogleId
                     ? "main-chats__chat-you"
                     : "main-chats__chat-friends"
                 }
               >
                 <div
                   className={
-                    message.authorGoogleId === currentUserGoogleId
+                    message.senderId === currentUserGoogleId
                       ? "chat-you"
                       : "chat-friends"
                   }
                 >
                   <div
                     className={
-                      message.authorGoogleId === currentUserGoogleId
+                      message.senderId === currentUserGoogleId
                         ? "chat-you__message"
                         : "chat-friends__message"
                     }
@@ -397,7 +364,7 @@ function ChatPage() {
                   </div>
                   <div
                     className={
-                      message.authorGoogleId === currentUserGoogleId
+                      message.senderId === currentUserGoogleId
                         ? "chat-you__message-time"
                         : "chat-friends__message-time"
                     }

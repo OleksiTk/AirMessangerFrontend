@@ -34,7 +34,7 @@ const SearchInput = () => {
         width: "100%", // Додано
         "& .MuiOutlinedInput-root": {
           borderRadius: "4px",
-          width: "527px",
+          width: "120%",
           height: "44px",
           backgroundColor: "var(--neutral-dark)",
           color: "var(--neutral-disabled)",

@@ -43,6 +43,14 @@
   transform: translate(-50%, -50%);
   fill: var(--neutral-off-white);
 }
+.main__accounts-icon__avatar {
+  width: 49px;
+  height: 50px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 .main__accounts-profile-info {
   display: flex;
   flex-direction: column;

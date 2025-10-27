@@ -7,27 +7,70 @@ import ChatsPage from "./pages/ChatsPage";
 import ContactsPages from "./pages/ContactsPages";
 import MorePage from "./pages/MorePage";
 import ChatPage from "./pages/ChatPage";
-import Login from "./pages/Login";
+import ProtectedRoute from "./components/ui/ProtectedRoute";
+import PublicRoute from "./components/ui/PublicRoute";
 
 function App() {
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<RegistrationPages />} />
+          <Route
+            path="/"
+            element={
+              <PublicRoute>
+                <RegistrationPages />
+              </PublicRoute>
+            }
+          />
           <Route
             path="/registrationStep1"
-            element={<RegistrationPagesStepOne />}
+            element={
+              <PublicRoute>
+                <RegistrationPagesStepOne />
+              </PublicRoute>
+            }
           />
           <Route
             path="/registrationStepAccount"
-            element={<RegistrationPagesAccount />}
+            element={
+              <PublicRoute>
+                <RegistrationPagesAccount />
+              </PublicRoute>
+            }
           />
-          <Route path="/chats" element={<ChatsPage />} />
-          <Route path="/contacts" element={<ContactsPages />} />
-          <Route path="/more" element={<MorePage />} />
-          <Route path="/chat/:profileName" element={<ChatPage />} />
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/chats"
+            element={
+              <ProtectedRoute>
+                <ChatsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/contacts"
+            element={
+              <ProtectedRoute>
+                <ContactsPages />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/more"
+            element={
+              <ProtectedRoute>
+                <MorePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chat/:profileName"
+            element={
+              <ProtectedRoute>
+                <ChatPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>

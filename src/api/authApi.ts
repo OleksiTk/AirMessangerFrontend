@@ -36,6 +36,13 @@ export const authApi = {
     });
     return res.json();
   },
+  checkAuth: async () => {
+    const res = await fetch(`${API_BASE_URL}/api/auth/check-auth`, {
+      method: "GET",
+      credentials: "include",
+    });
+    return res.json();
+  },
 };
 
 // Функція для отримання постів

@@ -52,7 +52,7 @@ const RegistrationPagesStepOne = () => {
       if (registerAccount.check == "ok") {
         console.log(registerAccount);
         setLoader(false);
-
+        localStorage.setItem("googleId", registerAccount.googleId);
         navigate("/registrationStepAccount");
       } else {
         setLoader(false);
@@ -94,6 +94,7 @@ const RegistrationPagesStepOne = () => {
       const loginToAccount = await authApi.login(emailLogin, passwordLogin);
       if (loginToAccount.check == "ok") {
         console.log("succes you login to your account", loginToAccount);
+        localStorage.setItem("googleId", loginToAccount.user.googleId);
         navigate("/chats");
       } else {
         setLoader(false);
