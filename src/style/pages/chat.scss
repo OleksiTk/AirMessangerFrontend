@@ -78,6 +78,10 @@
       justify-content: space-between;
 
       &__message {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-end;
         font-family: var(--font-family);
         font-weight: 400;
         font-size: 14px;
@@ -88,6 +92,58 @@
         overflow-wrap: break-word;
         hyphens: auto;
         max-width: 100%; // Важливо!
+        &__img {
+          width: 100%; // ширина по батьківському контейнеру
+          max-width: 200px; // обмеження максимальної ширини
+          height: auto; // висота підлаштовується пропорційно
+          object-fit: cover; // обрізає зайве, зберігаючи пропорції
+          border-radius: 8px;
+
+          // Медіа-запити для різних девайсів
+          @media (max-width: 768px) {
+            max-width: 150px; // планшети
+          }
+
+          @media (max-width: 480px) {
+            max-width: 100px; // мобільні телефони
+          }
+        }
+        &__file {
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 8px;
+          padding: 8px 12px;
+          background-color: var(--brand-color-dark);
+          color: var(--text-color);
+          border-radius: 8px;
+          width: 200px; // стандартна ширина
+          max-width: 100%; // адаптивно для маленьких екранів
+          height: auto; // висота під контент
+          text-decoration: none;
+          font-size: 14px;
+          font-weight: 500;
+          transition: background-color 0.2s ease, transform 0.2s ease;
+
+          // Іконка файлу (PDF, DOCX, TXT)
+          &::before {
+            content: "📄"; // можна замінити на реальну іконку через <img>
+            font-size: 18px;
+          }
+          &:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
+          }
+          @media (max-width: 768px) {
+            width: 150px;
+            font-size: 13px;
+          }
+
+          @media (max-width: 480px) {
+            width: 120px;
+            font-size: 12px;
+          }
+        }
       }
 
       &__message-time {
@@ -122,6 +178,10 @@
         overflow-wrap: break-word;
         hyphens: auto;
         max-width: 100%; // Важливо!
+        &__img {
+          width: 200px;
+          height: 100px;
+        }
       }
 
       &__message-time {
@@ -144,7 +204,19 @@
     justify-content: space-between;
     align-items: center;
   }
+  &__plus-add-file {
+    position: relative;
+    cursor: pointer;
 
+    &__input {
+      position: absolute;
+      width: 0;
+      height: 0;
+      opacity: 0;
+      overflow: hidden;
+      z-index: -1;
+    }
+  }
   &__input {
     &-text {
       font-family: var(--font-family);

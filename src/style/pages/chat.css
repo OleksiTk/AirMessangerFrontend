@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .chat {
   overflow-x: hidden;
   padding-inline: 8px;
@@ -77,6 +78,10 @@
   justify-content: space-between;
 }
 .main-chats__chat .chat-you__message {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
   font-family: var(--font-family);
   font-weight: 400;
   font-size: 14px;
@@ -88,6 +93,61 @@
   -webkit-hyphens: auto;
           hyphens: auto;
   max-width: 100%;
+}
+.main-chats__chat .chat-you__message__img {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 8px;
+}
+@media (max-width: 768px) {
+  .main-chats__chat .chat-you__message__img {
+    max-width: 150px;
+  }
+}
+@media (max-width: 480px) {
+  .main-chats__chat .chat-you__message__img {
+    max-width: 100px;
+  }
+}
+.main-chats__chat .chat-you__message__file {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: var(--brand-color-dark);
+  color: var(--text-color);
+  border-radius: 8px;
+  width: 200px;
+  max-width: 100%;
+  height: auto;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.main-chats__chat .chat-you__message__file::before {
+  content: "📄";
+  font-size: 18px;
+}
+.main-chats__chat .chat-you__message__file:hover {
+  opacity: 0.8;
+  transform: translateY(-2px);
+}
+@media (max-width: 768px) {
+  .main-chats__chat .chat-you__message__file {
+    width: 150px;
+    font-size: 13px;
+  }
+}
+@media (max-width: 480px) {
+  .main-chats__chat .chat-you__message__file {
+    width: 120px;
+    font-size: 12px;
+  }
 }
 .main-chats__chat .chat-you__message-time {
   font-family: var(--second-family);
@@ -121,6 +181,10 @@
           hyphens: auto;
   max-width: 100%;
 }
+.main-chats__chat .chat-friends__message__img {
+  width: 200px;
+  height: 100px;
+}
 .main-chats__chat .chat-friends__message-time {
   font-family: var(--second-family);
   font-weight: 400;
@@ -137,6 +201,18 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+}
+.footer__plus-add-file {
+  position: relative;
+  cursor: pointer;
+}
+.footer__plus-add-file__input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
 }
 .footer__input-text {
   font-family: var(--font-family);

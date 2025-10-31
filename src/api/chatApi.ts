@@ -24,7 +24,31 @@ export const chatApi = {
       throw error;
     }
   },
+  async upLoadFile(profileName: string, file: File | undefined) {
+    try {
+      const formData = new FormData();
+      if (file) {
+        formData.append("file", file); // ключ "file" повинен співпадати з upload.single("file")
+      }
+      const res = await fetch(
+        `${API_BASE_URL}/api/chat?profileName=${profileName}`,
+        {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        }
+      );
 
+      if (!res.ok) {
+        throw new Error(`Failed to get chat: ${res.statusText}`);
+      }
+
+      return res.json();
+    } catch (error) {
+      console.error("Error getting chat:", error);
+      throw error;
+    }
+  },
   // Отримати всі чати користувача
   async getUserChats() {
     try {

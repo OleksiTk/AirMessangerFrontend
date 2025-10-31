@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import "../style/pages/chat.css";
 import { chatApi } from "../api/chatApi";
 import { socket } from "../socket/socket";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface Message {
   chatId: string;
@@ -11,16 +12,25 @@ interface Message {
   id: number;
   isRead: boolean;
   senderId: string;
+  fileUrl: string;
+  fileName: string;
+  fileType: string;
 }
 
 interface Chat {
   id: number;
   isGroup: Boolean;
-  participants: {
-    id: number;
-    chatId: string;
-    userId: string;
-  };
+  participants: [
+    {
+      id: number;
+      chatId: string;
+      userId: string;
+      user: {
+        name: string;
+        last_name: string;
+      };
+    }
+  ];
 }
 
 function ChatPage() {
@@ -40,7 +50,11 @@ function ChatPage() {
 
   const [currentUserProfile, setCurrentUserProfile] = useState("");
   const currentUserGoogleId = localStorage.getItem("googleId");
-
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [fileValues, setfileValues] = useState<File | undefined>();
+  const handleSvgClick = () => {
+    fileInputRef.current?.click();
+  };
   // Автоскрол
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -204,19 +218,33 @@ function ChatPage() {
   }, [chat]);
 
   // Надіслати повідомлення
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!newMessage.trim() || !chat || !currentUserGoogleId) {
       console.log("dss");
 
       return;
     }
+    if (!profileName) {
+      setError("Profile name not provided");
+      setLoading(false);
+      return;
+    }
+    let fileData;
+    if (fileValues) {
+      const fileMeta = await chatApi.upLoadFile(profileName, fileValues);
+      setfileValues(undefined);
+      console.log("Ось що вийшло", fileMeta);
+      fileData = fileMeta;
+    }
 
-    console.log("Sending message:", newMessage);
+    console.log("Sending message:", newMessage, fileValues);
+    console.log("fileMeta", fileData);
 
     currentSocket.emit("send_message", {
       chatId: chat.id,
       content: newMessage,
       googleId: currentUserGoogleId,
+      file: fileData,
     });
 
     setNewMessage("");
@@ -257,7 +285,9 @@ function ChatPage() {
       }, 2000);
     }
   };
-
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
   if (loading) {
     return (
       <div className="chat">
@@ -305,7 +335,10 @@ function ChatPage() {
             </svg>
           </div>
           <div className="header-chat__name">
-            lol{" "}
+            {chat?.participants?.find((p) => p.userId !== currentUserGoogleId)
+              ?.user?.name || "name"}{" "}
+            {chat?.participants?.find((p) => p.userId !== currentUserGoogleId)
+              ?.user?.last_name || "last_name"}
             <span
               style={{
                 marginLeft: "10px",
@@ -360,7 +393,43 @@ function ChatPage() {
                         : "chat-friends__message"
                     }
                   >
-                    {message.content}
+                    {message.fileUrl
+                      ? (() => {
+                          const fileType = message.fileType || "";
+
+                          if (fileType.startsWith("image/")) {
+                            // якщо це картинка
+                            return (
+                              <img
+                                src={`${API_BASE_URL}${message.fileUrl}`}
+                                alt={message.fileName || "image"}
+                                className={
+                                  message.senderId === currentUserGoogleId
+                                    ? "chat-you__message__img"
+                                    : "chat-friends__message__img"
+                                }
+                              />
+                            );
+                          } else {
+                            // якщо це будь-який інший файл (pdf, docx, txt тощо)
+                            return (
+                              <a
+                                href={`${API_BASE_URL}${message.fileUrl}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={
+                                  message.senderId === currentUserGoogleId
+                                    ? "chat-you__message__file"
+                                    : "chat-friends__message__file"
+                                }
+                              >
+                                {message.fileName || "Download file"}
+                              </a>
+                            );
+                          }
+                        })()
+                      : null}
+                    <div>{message.content}</div>
                   </div>
                   <div
                     className={
@@ -404,9 +473,22 @@ function ChatPage() {
                 viewBox="0 0 14 14"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                onClick={handleSvgClick}
               >
                 <path d="M8 8V14H6V8H0V6H6V0H8V6H14V8H8Z" fill="#ADB5BD" />
               </svg>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="footer__plus-add-file__input"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  setfileValues(e.target.files?.[0]);
+                  // Обробка файлу
+                  const file = e.target.files?.[0];
+                  console.log(file);
+                }}
+              />
             </div>
             <div className="footer__input">
               <input
