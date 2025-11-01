@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "../style/pages/chat.css";
 import { chatApi } from "../api/chatApi";
 import { socket } from "../socket/socket";
@@ -35,6 +35,8 @@ interface Chat {
 
 function ChatPage() {
   const { profileName } = useParams<{ profileName: string }>();
+  const location = useLocation();
+
   const navigate = useNavigate();
   const currentSocket = socket;
 
@@ -71,11 +73,22 @@ function ChatPage() {
     const fetchChat = async () => {
       try {
         setLoading(true);
-        const chatData = await chatApi.getChatWithUser(profileName);
-        setChat(chatData);
+        const isGroupChat = location.pathname.includes("/chat-groups");
+
+        let chatData;
+        if (isGroupChat) {
+          // Логіка для групових чатів
+          chatData = await chatApi.getGroupsChats(profileName);
+          console.log("Group chat loaded:", chatData);
+        } else {
+          // Логіка для приватних чатів
+          chatData = await chatApi.getChatWithUser(profileName);
+          console.log("Private chat loaded:", chatData);
+        }
+
+        setChat(chatData.chat);
         setCurrentUserProfile("lol");
-        setMessages(chatData.messages || []);
-        console.log("Chat loaded:", chatData);
+        setMessages(chatData.chat.messages || []);
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to load chat";

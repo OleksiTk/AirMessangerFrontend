@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import "../../style/pages/header.css";
 import { userInfo } from "../../api/userInfo";
 import { contactsApi } from "../../api/contacts";
 import { socket } from "../../socket/socket";
 import { Box, TextField } from "@mui/material";
 import { ButtonBlue } from "./ButtonBlue";
+import { chatApi } from "../../api/chatApi";
 function Header({ Pages }: { Pages: string }) {
   useEffect(() => {
     setActivePage(Pages);
@@ -22,6 +23,7 @@ function Header({ Pages }: { Pages: string }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [secondStep, setSecondStep] = useState(false);
   const [switchContacts, setSwitcheContacts] = useState(true);
+  const [nameGroups, setNameGruops] = useState("");
   function handleChangePage(page: string) {
     if (page == "chats") {
       setWhatContent("Chats");
@@ -40,6 +42,19 @@ function Header({ Pages }: { Pages: string }) {
   }
   function HandlerAddConctas(name_profile: string) {
     addContacts(name_profile);
+  }
+  async function addContacts(name_profile: string) {
+    try {
+      const addContacts = await contactsApi.addContacts(name_profile);
+
+      if (addContacts) {
+        socket.emit("add_contacts", { message: "Add contatcs sussec" });
+
+        console.log("succes", addContacts);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
   async function FindUser() {
     try {
@@ -60,13 +75,11 @@ function Header({ Pages }: { Pages: string }) {
       console.error("Error finding user:", error);
     }
   }
-  async function addContacts(name_profile: string) {
+  async function HandlerAddGroupsContacts(name_profile: string) {
     try {
-      const addContacts = await contactsApi.addContacts(name_profile);
+      const addContacts = await chatApi.addToGroupsUser(name_profile);
 
       if (addContacts) {
-        socket.emit("add_contacts", { message: "Add contatcs sussec" });
-
         console.log("succes", addContacts);
       }
     } catch (error) {
@@ -81,7 +94,7 @@ function Header({ Pages }: { Pages: string }) {
   useEffect(() => {
     FindUser();
   }, [name]);
-  const handleSubmit = async () => {
+  const CreateGropus = async () => {
     try {
       let compressedFileString: string | null = null;
 
@@ -92,17 +105,20 @@ function Header({ Pages }: { Pages: string }) {
       }
 
       console.log("Compressed file (base64):", compressedFileString);
-
-      // const registerAccount = await userInfo.ChangeInfoProfile(
-      //   compressedFileString // ← Тепер це string, а не File
-      // );
-
-      // if (registerAccount) {
-      //   console.log("User:", registerAccount);
-      //   setAvatar(null);
-      //   setAvatarFile(null);
-      // }
-      setSecondStep(true);
+      if (!compressedFileString || !nameGroups) {
+        return console.log("dont have fields pls write");
+      }
+      const createNewGroups = await chatApi.createChats(
+        compressedFileString,
+        nameGroups
+      );
+      if (createNewGroups.check == "ok") {
+        console.log(createNewGroups);
+        setAvatarFile(null);
+        setAvatar(null);
+        setNameGruops("");
+        setSecondStep(true);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -338,11 +354,42 @@ function Header({ Pages }: { Pages: string }) {
                                         type="text"
                                         className="modal-window__input"
                                       />
+                                      <div className="contacts-form">
+                                        {findName.length > 0
+                                          ? findName.map((user) => (
+                                              <div
+                                                key={user.id}
+                                                className="contact-item"
+                                              >
+                                                <div className="contact-item__block">
+                                                  <img
+                                                    src={user.avatar}
+                                                    alt={user.name_profile}
+                                                    className="contact-item__block-img"
+                                                  />
+                                                  <span className="contact-item__block-name">
+                                                    {user.name_profile}
+                                                  </span>
+                                                  <div
+                                                    onClick={() => {
+                                                      HandlerAddGroupsContacts(
+                                                        user.name_profile
+                                                      );
+                                                    }}
+                                                    className="contact-item__block-add"
+                                                  >
+                                                    +
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            ))
+                                          : ""}
+                                      </div>
                                     </div>
                                   )}
                                   <div className="creating-groups__blocks-button-submit">
                                     <ButtonBlue
-                                      onClick={handleSubmit}
+                                      onClick={HabdleModalWindow}
                                       textButton="Submit"
                                     />
                                   </div>
@@ -462,9 +509,9 @@ function Header({ Pages }: { Pages: string }) {
                                                 "var(--neutral-off-white)", // колір рамки
                                             },
                                         }}
-                                        value={name}
+                                        value={nameGroups}
                                         onChange={(e) =>
-                                          setName(e.target.value)
+                                          setNameGruops(e.target.value)
                                         }
                                         id="outlined-basic"
                                         label="Name Groups (Required)"
@@ -475,7 +522,7 @@ function Header({ Pages }: { Pages: string }) {
                                   <div className="creating-groups__mainBlock-button">
                                     <ButtonBlue
                                       textButton="Create"
-                                      onClick={handleSubmit}
+                                      onClick={CreateGropus}
                                     />
                                   </div>
                                 </div>

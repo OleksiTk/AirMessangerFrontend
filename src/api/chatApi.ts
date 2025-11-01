@@ -49,6 +49,87 @@ export const chatApi = {
       throw error;
     }
   },
+  async createChats(avatar: string | null, name_groups: string) {
+    try {
+      if (!avatar || !name_groups) {
+        return console.log("this fields requrieds");
+      }
+
+      const res = await fetch(`${API_BASE_URL}/api/chat/create-groups`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          avatar: avatar,
+          name_groups: name_groups,
+        }),
+        credentials: "include",
+      });
+
+      return res.json();
+    } catch (error) {
+      console.log("something went wrong on create chats", error);
+    }
+  },
+  async addToGroupsUser(name_profile: string) {
+    try {
+      if (!name_profile) {
+        return console.log("this fields requrieds");
+      }
+
+      const res = await fetch(`${API_BASE_URL}/api/chat/add-to-groups`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name_profile,
+        }),
+        credentials: "include",
+      });
+
+      return res.json();
+    } catch (error) {
+      console.log("something went wrong on add", error);
+    }
+  },
+  async getGroups() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/chat/get-groups`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed to get chat: ${res.statusText}`);
+      }
+
+      return res.json();
+    } catch (error) {
+      console.error("Error getting chat:", error);
+      throw error;
+    }
+  },
+  async getGroupsChats(profileName: string) {
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/api/chat/GroupsName/${profileName}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(`Failed to get chat: ${res.statusText}`);
+      }
+
+      return res.json();
+    } catch (error) {
+      console.error("Error getting chat:", error);
+      throw error;
+    }
+  },
+
   // Отримати всі чати користувача
   async getUserChats() {
     try {

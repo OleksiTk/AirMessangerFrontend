@@ -71,6 +71,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/chat-groups/:profileName"
+            element={
+              <ProtectedRoute>
+                <ChatPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>
