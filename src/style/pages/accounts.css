@@ -1,0 +1,16 @@
+.account {
+  padding-block: 10px;
+  padding-inline: 10px;
+}
+.account__header {
+  display: flex;
+  flex: 1;
+}
+.account__main {
+  padding-top: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}/*# sourceMappingURL=accounts.css.map */

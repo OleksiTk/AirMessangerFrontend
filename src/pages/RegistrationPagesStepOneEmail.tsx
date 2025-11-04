@@ -18,6 +18,7 @@ function RegistrationPagesStepOneEmail() {
       const registerAccount = await authApi.register(email, password, name);
       if (registerAccount) {
         console.log(registerAccount);
+        
         setLoader(false);
         navigate("/registrationStepAccount");
       }

@@ -5,11 +5,13 @@ import "../style/pages/more.css";
 import "../style/pages/header.css";
 import "../style/pages/navbar.css";
 import { userInfo } from "../api/userInfo";
+import { useNavigate } from "react-router-dom";
 function MorePage() {
   const [name, setName] = useState("");
   const [lastName, setLastName] = useState("");
   const [avatar, setAvatar] = useState("");
   const hasFetched = useRef(false);
+  const navigate = useNavigate();
   const fethcInfoAboutUser = async () => {
     try {
       const fetchData = await userInfo.GetInfoUser();
@@ -86,7 +88,12 @@ function MorePage() {
             </div>
           </div>
           <div className="main__accounts-information">
-            <div className="main__accounts-information__profile  information-profile">
+            <div
+              onClick={() => {
+                navigate("/more/accounts");
+              }}
+              className="main__accounts-information__profile  information-profile"
+            >
               <div className="information-profile__icon">
                 <svg
                   width="24"

@@ -1,4 +1,4 @@
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "../../style/pages/header.css";
 import { userInfo } from "../../api/userInfo";
 import { contactsApi } from "../../api/contacts";

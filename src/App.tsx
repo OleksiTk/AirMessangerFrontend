@@ -9,6 +9,7 @@ import MorePage from "./pages/MorePage";
 import ChatPage from "./pages/ChatPage";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
 import PublicRoute from "./components/ui/PublicRoute";
+import Account from "./pages/Account";
 
 function App() {
   return (
@@ -60,6 +61,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <MorePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/more/accounts"
+            element={
+              <ProtectedRoute>
+                <Account />
               </ProtectedRoute>
             }
           />
