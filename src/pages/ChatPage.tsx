@@ -49,7 +49,7 @@ function ChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<number | null>(null);
-
+  const oneTryToTakeData = useRef<boolean>(true);
   const [currentUserProfile, setCurrentUserProfile] = useState("");
   const currentUserGoogleId = localStorage.getItem("googleId");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -64,9 +64,15 @@ function ChatPage() {
 
   // Завантажити чат з API
   useEffect(() => {
+    if (!oneTryToTakeData.current) {
+      oneTryToTakeData.current = false;
+      return;
+    }
     if (!profileName) {
       setError("Profile name not provided");
       setLoading(false);
+      console.log("Profile name not provided");
+
       return;
     }
 
@@ -80,15 +86,18 @@ function ChatPage() {
           // Логіка для групових чатів
           chatData = await chatApi.getGroupsChats(profileName);
           console.log("Group chat loaded:", chatData);
+          setChat(chatData.chat);
+          setMessages(chatData.chat.messages || []);
         } else {
           // Логіка для приватних чатів
           chatData = await chatApi.getChatWithUser(profileName);
           console.log("Private chat loaded:", chatData);
+          setChat(chatData);
+          setMessages(chatData.messages || []);
         }
 
-        setChat(chatData.chat);
+        setChat(chatData);
         setCurrentUserProfile("lol");
-        setMessages(chatData.chat.messages || []);
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to load chat";
@@ -99,7 +108,7 @@ function ChatPage() {
     };
 
     fetchChat();
-  }, [profileName]);
+  }, []);
 
   // Socket.IO підключення
   useEffect(() => {
