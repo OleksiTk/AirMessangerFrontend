@@ -31,11 +31,15 @@ interface Chat {
       };
     }
   ];
+  chat: {
+    id: string;
+  };
 }
 
 function ChatPage() {
   const { profileName } = useParams<{ profileName: string }>();
   const location = useLocation();
+  const isGroupChat = location.pathname.includes("/chat-groups");
 
   const navigate = useNavigate();
   const currentSocket = socket;
@@ -136,13 +140,20 @@ function ChatPage() {
     const handleConnect = () => {
       setIsConnected(true);
       console.log("Socket connected:", currentSocket.id);
-
+      if (isGroupChat) {
+        currentSocket.emit("join_chat", {
+          chatId: chat.chat.id,
+          googleId: currentUserGoogleId,
+          name_profile: currentUserProfile,
+        });
+      } else {
+        currentSocket.emit("join_chat", {
+          chatId: chat.id,
+          googleId: currentUserGoogleId,
+          name_profile: currentUserProfile,
+        });
+      }
       // Приєднуємось до чату
-      currentSocket.emit("join_chat", {
-        chatId: chat.id,
-        googleId: currentUserGoogleId,
-        name_profile: currentUserProfile,
-      });
     };
 
     const handleDisconnect = () => {
@@ -261,13 +272,21 @@ function ChatPage() {
 
     console.log("Sending message:", newMessage, fileValues);
     console.log("fileMeta", fileData);
-
-    currentSocket.emit("send_message", {
-      chatId: chat.id,
-      content: newMessage,
-      googleId: currentUserGoogleId,
-      file: fileData,
-    });
+    if (isGroupChat) {
+      currentSocket.emit("send_message", {
+        chatId: chat.chat.id,
+        content: newMessage,
+        googleId: currentUserGoogleId,
+        file: fileData,
+      });
+    } else {
+      currentSocket.emit("send_message", {
+        chatId: chat.id,
+        content: newMessage,
+        googleId: currentUserGoogleId,
+        file: fileData,
+      });
+    }
 
     setNewMessage("");
 
