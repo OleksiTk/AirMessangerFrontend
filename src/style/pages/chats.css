@@ -99,6 +99,7 @@
   position: relative;
   width: 100%;
   padding: 12px 0;
+  cursor: pointer;
 }
 .main-groups__icon {
   position: relative;

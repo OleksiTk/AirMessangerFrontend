@@ -20,12 +20,14 @@ interface Message {
 interface Chat {
   id: number;
   isGroup: Boolean;
+
   participants: [
     {
       id: number;
       chatId: string;
       userId: string;
       user: {
+        avatar: string;
         name: string;
         last_name: string;
       };
@@ -33,6 +35,20 @@ interface Chat {
   ];
   chat: {
     id: string;
+    avatar: string;
+    name: string;
+    participants: [
+      {
+        id: number;
+        chatId: string;
+        userId: string;
+        user: {
+          avatar: string;
+          name: string;
+          last_name: string;
+        };
+      }
+    ];
   };
 }
 
@@ -58,6 +74,7 @@ function ChatPage() {
   const currentUserGoogleId = localStorage.getItem("googleId");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileValues, setfileValues] = useState<File | undefined>();
+  const [isGroup, setIsGroup] = useState<boolean>(false);
   const handleSvgClick = () => {
     fileInputRef.current?.click();
   };
@@ -92,6 +109,7 @@ function ChatPage() {
           console.log("Group chat loaded:", chatData);
           setChat(chatData.chat);
           setMessages(chatData.chat.messages || []);
+          setIsGroup(true);
         } else {
           // Логіка для приватних чатів
           chatData = await chatApi.getChatWithUser(profileName);
@@ -124,6 +142,7 @@ function ChatPage() {
       socketConnected: currentSocket.connected,
     });
     console.log("chats id", chat?.id);
+    console.log(chat);
 
     if (!chat?.id || !currentUserGoogleId || !currentUserProfile) {
       console.log("⏳ Waiting for complete chat data...", {
@@ -376,19 +395,40 @@ function ChatPage() {
             </svg>
           </div>
           <div className="header-chat__name">
-            {chat?.participants?.find((p) => p.userId !== currentUserGoogleId)
-              ?.user?.name || "name"}{" "}
-            {chat?.participants?.find((p) => p.userId !== currentUserGoogleId)
-              ?.user?.last_name || "last_name"}
-            <span
-              style={{
-                marginLeft: "10px",
-                fontSize: "10px",
-                color: isConnected ? "#25d366" : "#e74c3c",
-              }}
-            >
-              {isConnected ? "🟢 Online" : "🔴 Offline"}
-            </span>
+            {isGroup ? (
+              <div className="header-chat__name-group">
+                <img
+                  src={chat?.chat?.avatar}
+                  alt="avatar group"
+                  className="header-chat__name-avatar"
+                />
+                <span className="header-chat__name-text">
+                  {chat?.chat?.name}
+                </span>
+              </div>
+            ) : (
+              <div>
+                {chat?.participants?.map((p) => {
+                  if (p.userId === currentUserGoogleId) {
+                    return (
+                      <div key={p.userId} className="header-chat__name-group">
+                        <img
+                          className="header-chat__name-avatar"
+                          src={p.user.avatar || `/assets/NoneUserAvatar.jpg`}
+                          alt="avatar"
+                        />
+                        {chat?.participants?.find(
+                          (p) => p.userId !== currentUserGoogleId
+                        )?.user?.name || "name"}{" "}
+                        {chat?.participants?.find(
+                          (p) => p.userId !== currentUserGoogleId
+                        )?.user?.last_name || "last_name"}
+                      </div>
+                    );
+                  }
+                })}
+              </div>
+            )}
           </div>
           <div className="header-chat__settings">
             <div className="header__settings-search">
@@ -420,6 +460,38 @@ function ChatPage() {
                     : "main-chats__chat-friends"
                 }
               >
+                {isGroup ? (
+                  <>
+                    {chat?.chat?.participants?.map((p) => {
+                      if (p.userId === message.senderId) {
+                        return (
+                          <img
+                            key={p.userId}
+                            className="main-chats__chat-avatar"
+                            src={p.user.avatar || `/assets/NoneUserAvatar.jpg`}
+                            alt="avatar"
+                          />
+                        );
+                      }
+                    })}
+                  </>
+                ) : (
+                  <>
+                    {chat?.participants?.map((p) => {
+                      if (p.userId === message.senderId) {
+                        return (
+                          <img
+                            key={p.userId}
+                            className="main-chats__chat-avatar"
+                            src={p.user.avatar || `/assets/NoneUserAvatar.jpg`}
+                            alt="avatar"
+                          />
+                        );
+                      }
+                    })}
+                  </>
+                )}
+
                 <div
                   className={
                     message.senderId === currentUserGoogleId
@@ -434,6 +506,35 @@ function ChatPage() {
                         : "chat-friends__message"
                     }
                   >
+                    <div
+                      className={
+                        message.senderId === currentUserGoogleId
+                          ? "chat-you__message__name"
+                          : "chat-friends__message__name"
+                      }
+                    >
+                      {isGroup ? (
+                        <>
+                          {chat?.chat?.participants?.map((p) => {
+                            if (p.userId === message.senderId) {
+                              return p.user.name;
+                            } else {
+                              return "";
+                            }
+                          })}
+                        </>
+                      ) : (
+                        <>
+                          {chat?.participants?.map((p) => {
+                            if (p.userId === message.senderId) {
+                              return p.user.name;
+                            } else {
+                              return "";
+                            }
+                          })}
+                        </>
+                      )}
+                    </div>
                     {message.fileUrl
                       ? (() => {
                           const fileType = message.fileType || "";
@@ -479,11 +580,26 @@ function ChatPage() {
                         : "chat-friends__message-time"
                     }
                   >
-                    {new Date(message.createdAt).toLocaleTimeString("uk-UA", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}{" "}
-                    · {message.isRead ? "Read" : "Sent"}
+                    {message.createdAt ? (
+                      <div>
+                        {new Date(message.createdAt).toLocaleTimeString(
+                          "uk-UA",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )}{" "}
+                        · {message.isRead ? "Read" : "Sent"}
+                      </div>
+                    ) : (
+                      <div>
+                        {new Date().toLocaleTimeString("uk-UA", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}{" "}
+                        · {message.isRead ? "Read" : "Sent"}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
