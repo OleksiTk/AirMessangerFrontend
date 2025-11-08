@@ -211,7 +211,7 @@ function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Завантажити чат з API
+  // Завантажити чат  з API
   useEffect(() => {
     if (!oneTryToTakeData.current) {
       oneTryToTakeData.current = false;
