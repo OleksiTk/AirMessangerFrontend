@@ -24,11 +24,15 @@ export const chatApi = {
       throw error;
     }
   },
-  async upLoadFile(profileName: string, file: File | undefined) {
+  async upLoadFile(profileName: string, file: File[] | undefined) {
     try {
       const formData = new FormData();
       if (file) {
-        formData.append("file", file); // ключ "file" повинен співпадати з upload.single("file")
+        file.forEach((f) => {
+          console.log(f);
+
+          formData.append("array", f);
+        });
       }
       const res = await fetch(
         `${API_BASE_URL}/api/chat?profileName=${profileName}`,

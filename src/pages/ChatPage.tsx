@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "../style/pages/chat.css";
 import { chatApi } from "../api/chatApi";
 import { socket } from "../socket/socket";
+import { toast, ToastContainer } from "react-toastify";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface Message {
@@ -12,11 +13,16 @@ interface Message {
   id: number;
   isRead: boolean;
   senderId: string;
-  fileUrl: string;
-  fileName: string;
-  fileType: string;
+  files: FileMessage[];
 }
-
+interface FileMessage {
+  fileName: string;
+  fileSize: number;
+  fileType: string;
+  fileUrl: string;
+  id: number;
+  messageId: number;
+}
 interface Chat {
   id: number;
   isGroup: Boolean;
@@ -53,6 +59,8 @@ interface Chat {
 }
 
 function ChatPage() {
+  const MAX_FILES = 4; // Максимальна кількість файлів
+
   const { profileName } = useParams<{ profileName: string }>();
   const location = useLocation();
   const isGroupChat = location.pathname.includes("/chat-groups");
@@ -63,6 +71,7 @@ function ChatPage() {
   const [chat, setChat] = useState<Chat | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [newFilesMessage, setNewFilesMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -73,10 +82,129 @@ function ChatPage() {
   const [currentUserProfile, setCurrentUserProfile] = useState("");
   const currentUserGoogleId = localStorage.getItem("googleId");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const modalFileInputRef = useRef<HTMLInputElement>(null);
   const [fileValues, setfileValues] = useState<File | undefined>();
+  const [filesArray, setFilesArray] = useState<File[]>([]);
   const [isGroup, setIsGroup] = useState<boolean>(false);
+  const [modalWindowFiles, setModalWindowFiles] = useState<boolean>(false);
   const handleSvgClick = () => {
     fileInputRef.current?.click();
+  };
+  const handleModalAddFiles = () => {
+    // В модальному вікні використовуємо modalFileInputRef
+    modalFileInputRef.current?.click();
+  };
+  const CancelSendFiles = () => {
+    setModalWindowFiles(false);
+    setFilesArray([]);
+    setfileValues(undefined);
+  };
+  const handleFooterFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || []);
+
+    if (selectedFiles.length > 0) {
+      setFilesArray((prevFiles) => {
+        const totalFiles = prevFiles.length + selectedFiles.length;
+
+        // Перевірка ліміту
+        if (totalFiles > MAX_FILES) {
+          toast.warn(`${"max 4 files"}`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+          return prevFiles;
+        }
+        const newArray = [...prevFiles, ...selectedFiles];
+        console.log(
+          "Updated files array:",
+          newArray.map((f) => f.name)
+        );
+        return newArray;
+      });
+      // setfileValues(selectedFile);
+      setModalWindowFiles(true);
+    }
+    e.target.value = "";
+  };
+  const handleModalFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = Array.from(e.target.files || []);
+
+    if (selectedFile) {
+      setFilesArray((prevFiles) => {
+        const totalFiles = prevFiles.length + selectedFile.length;
+
+        // Перевірка ліміту
+        if (totalFiles > MAX_FILES) {
+          toast.warn(`${"max 4 files"}`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+          return prevFiles;
+        }
+        const newArray = [...prevFiles, ...selectedFile];
+        console.log(
+          "Updated files array:",
+          newArray.map((f) => f.name)
+        );
+        return newArray;
+      });
+      // setfileValues(selectedFile);
+    }
+    e.target.value = "";
+  };
+  const sendMessageWithFiles = async () => {
+    try {
+      if (filesArray.length > 0) {
+        const fileTake = await chatApi.upLoadFile(profileName!, filesArray);
+        console.log("fileTake", fileTake);
+        if (!chat) return;
+        if (!newFilesMessage) {
+          toast.warn(`${"pls write any message"}`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+          return;
+        }
+        if (isGroupChat) {
+          currentSocket.emit("send_message", {
+            chatId: chat.chat.id,
+            content: newFilesMessage,
+            googleId: currentUserGoogleId,
+            files: fileTake,
+          });
+        } else {
+          currentSocket.emit("send_message", {
+            chatId: chat.id,
+            content: newFilesMessage,
+            googleId: currentUserGoogleId,
+            files: fileTake,
+          });
+        }
+        setFilesArray([]);
+        setNewFilesMessage("");
+        setModalWindowFiles(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   // Автоскрол
   useEffect(() => {
@@ -282,12 +410,6 @@ function ChatPage() {
       return;
     }
     let fileData;
-    if (fileValues) {
-      const fileMeta = await chatApi.upLoadFile(profileName, fileValues);
-      setfileValues(undefined);
-      console.log("Ось що вийшло", fileMeta);
-      fileData = fileMeta;
-    }
 
     console.log("Sending message:", newMessage, fileValues);
     console.log("fileMeta", fileData);
@@ -296,14 +418,12 @@ function ChatPage() {
         chatId: chat.chat.id,
         content: newMessage,
         googleId: currentUserGoogleId,
-        file: fileData,
       });
     } else {
       currentSocket.emit("send_message", {
         chatId: chat.id,
         content: newMessage,
         googleId: currentUserGoogleId,
-        file: fileData,
       });
     }
 
@@ -346,8 +466,8 @@ function ChatPage() {
     }
   };
   useEffect(() => {
-    console.log(messages);
-  }, [messages]);
+    console.log(filesArray);
+  }, [filesArray]);
   if (loading) {
     return (
       <div className="chat">
@@ -378,6 +498,18 @@ function ChatPage() {
   return (
     <div className="chat">
       <div className="container">
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
         {/* Header */}
         <header className="header-chat">
           <div className="header-chat__arrow" onClick={() => navigate(-1)}>
@@ -409,7 +541,7 @@ function ChatPage() {
             ) : (
               <div>
                 {chat?.participants?.map((p) => {
-                  if (p.userId === currentUserGoogleId) {
+                  if (p.userId !== currentUserGoogleId) {
                     return (
                       <div key={p.userId} className="header-chat__name-group">
                         <img
@@ -451,6 +583,125 @@ function ChatPage() {
         {/* Messages */}
         <main className="main-chats">
           <div className="main-chats__chat">
+            {modalWindowFiles && (
+              <>
+                <div
+                  className="main-chats__backdrop"
+                  onClick={() => setModalWindowFiles(false)}
+                />
+                <div className="main-chats__send-files send-files-modal">
+                  <div className="send-files-modal__container">
+                    <div className="send-files-modal__main">
+                      <h2 className="send-files-modal__title">
+                        Send File{" "}
+                        {filesArray.length != null ? filesArray.length : ""}
+                      </h2>
+                      <div className="send-files-modal__files">
+                        {filesArray.map((file, index) => {
+                          const isImage = file.type.startsWith("image/");
+
+                          return (
+                            <div key={index} className="send-files-modal__file">
+                              {isImage ? (
+                                // Якщо це картинка
+                                <div className="send-files-modal__files-image">
+                                  <img
+                                    src={URL.createObjectURL(file)}
+                                    alt={file.name}
+                                    className="send-files-modal__file-img"
+                                  />
+                                  <button
+                                    onClick={() => {
+                                      // Видаляємо файл з масиву за індексом
+                                      setFilesArray((prevFiles) =>
+                                        prevFiles.filter((_, i) => i !== index)
+                                      );
+
+                                      // Опціонально: Очищуємо fileValues якщо це був останній файл
+                                      if (filesArray.length === 1) {
+                                        setfileValues(undefined);
+                                      }
+                                    }}
+                                    className="send-files-modal__file-remove"
+                                  >
+                                    X
+                                  </button>
+                                </div>
+                              ) : (
+                                // Якщо це інший файл (PDF, DOCX, TXT тощо)
+                                <div className="send-files-modal__files-object">
+                                  <span className="file-icon">📄</span>
+                                  <span className="file-name">{file.name}</span>
+                                  <span className="file-size">
+                                    {(file.size / 1024).toFixed(2)} KB
+                                  </span>
+                                  <button
+                                    onClick={() => {
+                                      // Видаляємо файл з масиву за індексом
+                                      setFilesArray((prevFiles) =>
+                                        prevFiles.filter((_, i) => i !== index)
+                                      );
+
+                                      // Опціонально: Очищуємо fileValues якщо це був останній файл
+                                      if (filesArray.length === 1) {
+                                        setfileValues(undefined);
+                                      }
+                                    }}
+                                    className="send-files-modal__file-remove"
+                                  >
+                                    X
+                                  </button>
+                                </div>
+                              )}
+
+                              {/* Кнопка видалення */}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="send-files-modal__footer">
+                      <input
+                        type="text"
+                        className="send-files-modal__text"
+                        placeholder="description"
+                        value={newFilesMessage}
+                        onChange={(e) => setNewFilesMessage(e.target.value)}
+                      />
+                      <div className="send-files-modal__buttons">
+                        {" "}
+                        <button
+                          className="send-files-modal__add-files"
+                          onClick={handleModalAddFiles}
+                        >
+                          Add Files
+                        </button>
+                        <input
+                          type="file"
+                          multiple
+                          ref={modalFileInputRef}
+                          style={{ display: "none" }}
+                          onChange={handleModalFileSelect}
+                        />
+                        <button
+                          onClick={CancelSendFiles}
+                          className="send-files-modal__cancel-send"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={sendMessageWithFiles}
+                          className="send-files-modal__apply-send"
+                        >
+                          Send
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -535,41 +786,37 @@ function ChatPage() {
                         </>
                       )}
                     </div>
-                    {message.fileUrl
-                      ? (() => {
-                          const fileType = message.fileType || "";
-
-                          if (fileType.startsWith("image/")) {
-                            // якщо це картинка
-                            return (
-                              <img
-                                src={`${API_BASE_URL}${message.fileUrl}`}
-                                alt={message.fileName || "image"}
-                                className={
-                                  message.senderId === currentUserGoogleId
-                                    ? "chat-you__message__img"
-                                    : "chat-friends__message__img"
-                                }
-                              />
-                            );
-                          } else {
-                            // якщо це будь-який інший файл (pdf, docx, txt тощо)
-                            return (
-                              <a
-                                href={`${API_BASE_URL}${message.fileUrl}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={
-                                  message.senderId === currentUserGoogleId
-                                    ? "chat-you__message__file"
-                                    : "chat-friends__message__file"
-                                }
-                              >
-                                {message.fileName || "Download file"}
-                              </a>
-                            );
-                          }
-                        })()
+                    {message.files?.length > 0
+                      ? message.files.map((file) => {
+                          return (
+                            <div key={file.id}>
+                              {file.fileType.startsWith("image/") ? (
+                                <img
+                                  className={
+                                    message.senderId === currentUserGoogleId
+                                      ? "chat-you__message__img"
+                                      : "chat-friends__message__img"
+                                  }
+                                  src={`${API_BASE_URL}${file.fileUrl}`}
+                                  alt={file.fileName || "image"}
+                                />
+                              ) : (
+                                <a
+                                  href={`${API_BASE_URL}${file.fileUrl}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={
+                                    message.senderId === currentUserGoogleId
+                                      ? "chat-you__message__file"
+                                      : "chat-friends__message__file"
+                                  }
+                                >
+                                  {file.fileName || "Download file"}
+                                </a>
+                              )}
+                            </div>
+                          );
+                        })
                       : null}
                     <div>{message.content}</div>
                   </div>
@@ -637,14 +884,9 @@ function ChatPage() {
               <input
                 type="file"
                 ref={fileInputRef}
-                className="footer__plus-add-file__input"
+                multiple
                 style={{ display: "none" }}
-                onChange={(e) => {
-                  setfileValues(e.target.files?.[0]);
-                  // Обробка файлу
-                  const file = e.target.files?.[0];
-                  console.log(file);
-                }}
+                onChange={handleFooterFileSelect}
               />
             </div>
             <div className="footer__input">
