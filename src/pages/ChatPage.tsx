@@ -14,6 +14,8 @@ interface Message {
   isRead: boolean;
   senderId: string;
   files: FileMessage[];
+  isLoading?: boolean;
+  tempId?: string;
 }
 interface FileMessage {
   fileName: string;
@@ -167,11 +169,9 @@ function ChatPage() {
   const sendMessageWithFiles = async () => {
     try {
       if (filesArray.length > 0) {
-        const fileTake = await chatApi.upLoadFile(profileName!, filesArray);
-        console.log("fileTake", fileTake);
         if (!chat) return;
-        if (!newFilesMessage) {
-          toast.warn(`${"pls write any message"}`, {
+        if (!newFilesMessage.trim()) {
+          toast.warn(`pls write any message`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -183,12 +183,34 @@ function ChatPage() {
           });
           return;
         }
+
+        // Генеруємо тимчасовий ID
+        const tempId = `temp_${Date.now()}`;
+
+        // Додаємо повідомлення з флагом isLoading
+        const tempMessage: Message = {
+          chatId: isGroupChat ? chat.chat.id : String(chat.id),
+          content: newFilesMessage,
+          createdAt: new Date().toISOString(),
+          id: 0,
+          isRead: false,
+          senderId: currentUserGoogleId!,
+          files: [],
+          isLoading: true,
+          tempId: tempId,
+        };
+
+        setMessages((prev) => [...prev, tempMessage]);
+
+        const fileTake = await chatApi.upLoadFile(profileName!, filesArray);
+
         if (isGroupChat) {
           currentSocket.emit("send_message", {
             chatId: chat.chat.id,
             content: newFilesMessage,
             googleId: currentUserGoogleId,
             files: fileTake,
+            tempId: tempId, // Передаємо tempId на сервер
           });
         } else {
           currentSocket.emit("send_message", {
@@ -196,14 +218,23 @@ function ChatPage() {
             content: newFilesMessage,
             googleId: currentUserGoogleId,
             files: fileTake,
+            tempId: tempId,
           });
         }
+
         setFilesArray([]);
         setNewFilesMessage("");
         setModalWindowFiles(false);
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error sending files:", error);
+      // Видаляємо тимчасове повідомлення у разі помилки
+      setMessages((prev) => prev.filter((msg) => !msg.isLoading));
+      toast.error("Failed to send files", {
+        position: "top-right",
+        autoClose: 5000,
+        theme: "dark",
+      });
     }
   };
   // Автоскрол
@@ -309,9 +340,18 @@ function ChatPage() {
     };
 
     // Отримуємо нові повідомлення
-    const handleReceiveMessage = (message: Message) => {
+    const handleReceiveMessage = (message: Message & { tempId?: string }) => {
       console.log("New message received:", message);
       setMessages((prev) => {
+        // Якщо є tempId, замінюємо тимчасове повідомлення
+        if (message.tempId) {
+          return prev.map((msg) =>
+            msg.tempId === message.tempId
+              ? { ...message, isLoading: false, tempId: undefined }
+              : msg
+          );
+        }
+
         // Перевіряємо чи повідомлення вже є
         if (prev.some((msg) => msg.id === message.id)) {
           return prev;
@@ -400,8 +440,6 @@ function ChatPage() {
   // Надіслати повідомлення
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !chat || !currentUserGoogleId) {
-      console.log("dss");
-
       return;
     }
     if (!profileName) {
@@ -409,29 +447,49 @@ function ChatPage() {
       setLoading(false);
       return;
     }
-    let fileData;
 
-    console.log("Sending message:", newMessage, fileValues);
-    console.log("fileMeta", fileData);
+    // Генеруємо тимчасовий ID
+    const tempId = `temp_${Date.now()}`;
+
+    // Створюємо тимчасове повідомлення з флагом isLoading
+    const tempMessage: Message = {
+      chatId: isGroupChat ? chat.chat.id : String(chat.id),
+      content: newMessage,
+      createdAt: new Date().toISOString(),
+      id: 0, // Тимчасовий ID
+      isRead: false,
+      senderId: currentUserGoogleId,
+      files: [],
+      isLoading: true, // Флаг завантаження
+      tempId: tempId, // Унікальний тимчасовий ідентифікатор
+    };
+
+    // Додаємо повідомлення до списку
+    setMessages((prev) => [...prev, tempMessage]);
+
+    // Очищуємо поле вводу
+    const messageToSend = newMessage;
+    setNewMessage("");
+
+    // Відправляємо повідомлення на сервер
     if (isGroupChat) {
       currentSocket.emit("send_message", {
         chatId: chat.chat.id,
-        content: newMessage,
+        content: messageToSend,
         googleId: currentUserGoogleId,
+        tempId: tempId, // Передаємо tempId щоб потім знайти і замінити повідомлення
       });
     } else {
       currentSocket.emit("send_message", {
         chatId: chat.id,
-        content: newMessage,
+        content: messageToSend,
         googleId: currentUserGoogleId,
+        tempId: tempId,
       });
     }
 
-    setNewMessage("");
-
-    // ✅ Зупиняємо індикатор "typing"
     currentSocket.emit("typing", {
-      chatId: chat.id,
+      chatId: isGroupChat ? chat.chat.id : chat.id,
       name_profile: currentUserProfile,
       isTyping: false,
     });
@@ -704,13 +762,21 @@ function ChatPage() {
 
             {messages.map((message) => (
               <div
-                key={message.id}
+                key={message.tempId || message.id}
                 className={
                   message.senderId === currentUserGoogleId
                     ? "main-chats__chat-you"
                     : "main-chats__chat-friends"
                 }
+                style={{
+                  filter: message.isLoading ? "blur(2px)" : "none",
+                  opacity: message.isLoading ? 0.6 : 1,
+                  position: "relative",
+                  transition: "all 0.3s ease",
+                }}
               >
+                {/* Лоадер поверх повідомлення */}
+
                 {isGroup ? (
                   <>
                     {chat?.chat?.participants?.map((p) => {
@@ -750,6 +816,11 @@ function ChatPage() {
                       : "chat-friends"
                   }
                 >
+                  {message.isLoading && (
+                    <div className="loader-message">
+                      <div className="loader-message__spinner" />
+                    </div>
+                  )}
                   <div
                     className={
                       message.senderId === currentUserGoogleId
@@ -836,7 +907,12 @@ function ChatPage() {
                             minute: "2-digit",
                           }
                         )}{" "}
-                        · {message.isRead ? "Read" : "Sent"}
+                        ·{" "}
+                        {message.isLoading
+                          ? "Sending..."
+                          : message.isRead
+                          ? "Read"
+                          : "Sent"}
                       </div>
                     ) : (
                       <div>
@@ -844,7 +920,12 @@ function ChatPage() {
                           hour: "2-digit",
                           minute: "2-digit",
                         })}{" "}
-                        · {message.isRead ? "Read" : "Sent"}
+                        ·{" "}
+                        {message.isLoading
+                          ? "Sending..."
+                          : message.isRead
+                          ? "Read"
+                          : "Sent"}
                       </div>
                     )}
                   </div>

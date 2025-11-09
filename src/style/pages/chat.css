@@ -303,6 +303,7 @@
   align-items: flex-end;
   row-gap: 10px;
   width: 100%;
+  position: relative;
 }
 .main-chats__chat-friends {
   display: flex;
@@ -492,4 +493,30 @@
   padding: 6px 8px;
   width: 80%;
   height: 36px;
+}
+
+.loader-message {
+  position: absolute;
+  top: 50%;
+  left: 87%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+@media (max-width: 600px) {
+  .loader-message {
+    left: 70%;
+  }
+}
+@media (max-width: 760px) {
+  .loader-message {
+    left: 80%;
+  }
+}
+.loader-message__spinner {
+  border: 4px solid var(--neutral-dark);
+  border-top: 4px solid var(--brand-color-dark-mode);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
 }/*# sourceMappingURL=chat.css.map */
