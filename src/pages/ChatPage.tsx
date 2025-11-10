@@ -4,6 +4,8 @@ import "../style/pages/chat.css";
 import { chatApi } from "../api/chatApi";
 import { socket } from "../socket/socket";
 import { toast, ToastContainer } from "react-toastify";
+import { useImageModal } from "../hooks/useImageModal";
+import EmojiPicker, { Theme } from "emoji-picker-react";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface Message {
@@ -66,10 +68,14 @@ function ChatPage() {
   const { profileName } = useParams<{ profileName: string }>();
   const location = useLocation();
   const isGroupChat = location.pathname.includes("/chat-groups");
-
+  const { openImage, ImageModal } = useImageModal();
+  const messageRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const [highlightedMessageId, setHighlightedMessageId] = React.useState<
+    string | null | number
+  >(null);
   const navigate = useNavigate();
   const currentSocket = socket;
-
+  const [SearchTextValue, setSearchTextValue] = useState("");
   const [chat, setChat] = useState<Chat | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -88,6 +94,10 @@ function ChatPage() {
   const [filesArray, setFilesArray] = useState<File[]>([]);
   const [isGroup, setIsGroup] = useState<boolean>(false);
   const [modalWindowFiles, setModalWindowFiles] = useState<boolean>(false);
+  const [openEmojiPicker, setOpenEmojiPicker] = useState<boolean>(false);
+  const [emojiInMessage, setEmojiInMessage] = useState<number | null>(null);
+  const [openEmojiInMessageContext, setOpenEmojiInMessageContext] =
+    useState<boolean>(false);
   const handleSvgClick = () => {
     fileInputRef.current?.click();
   };
@@ -197,7 +207,7 @@ function ChatPage() {
         };
 
         setMessages((prev) => [...prev, tempMessage]);
-
+        setModalWindowFiles(false);
         const fileTake = await chatApi.upLoadFile(profileName!, filesArray);
 
         if (isGroupChat) {
@@ -220,7 +230,6 @@ function ChatPage() {
 
         setFilesArray([]);
         setNewFilesMessage("");
-        setModalWindowFiles(false);
       }
     } catch (error) {
       console.error("Error sending files:", error);
@@ -233,6 +242,44 @@ function ChatPage() {
       });
     }
   };
+  const CheckImgFullScreen = (e: React.MouseEvent<HTMLImageElement>) => {
+    const imgSrc = e.currentTarget.src;
+    openImage(imgSrc);
+  };
+  const SearchText = (foundText: string) => {
+    if (!foundText.trim()) return;
+    setTimeout(() => {
+      const foundMessage = messages.find((message) =>
+        message.content.toLowerCase().includes(foundText.toLowerCase())
+      );
+
+      if (foundMessage) {
+        // Скролимо до повідомлення
+        const messageElement = messageRefs.current[foundMessage.id];
+        if (messageElement) {
+          messageElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+
+          // Підсвічуємо повідомлення
+          setHighlightedMessageId(foundMessage.id);
+
+          // Прибираємо підсвітку через 2 секунди
+          setTimeout(() => {
+            setHighlightedMessageId(null);
+          }, 2000);
+        }
+      }
+    }, 1000);
+    // Знаходимо перше повідомлення з текстом
+  };
+  useEffect(() => {
+    console.log(emojiInMessage);
+  }, [emojiInMessage]);
+  useEffect(() => {
+    SearchText(SearchTextValue);
+  }, [SearchTextValue]);
   // Автоскрол
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -459,7 +506,7 @@ function ChatPage() {
       isLoading: true, // Флаг завантаження
       tempId: tempId, // Унікальний тимчасовий ідентифікатор
     };
-
+    setOpenEmojiPicker(false);
     // Додаємо повідомлення до списку
     setMessages((prev) => [...prev, tempMessage]);
 
@@ -617,19 +664,29 @@ function ChatPage() {
             )}
           </div>
           <div className="header-chat__settings">
-            <div className="header__settings-search">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M18.677 19.607L12.962 13.891C10.4196 15.6984 6.91642 15.2563 4.90285 12.8739C2.88929 10.4915 3.03714 6.96358 5.24298 4.75799C7.44824 2.55144 10.9765 2.40295 13.3594 4.4164C15.7422 6.42986 16.1846 9.93344 14.377 12.476L20.092 18.192L18.678 19.606L18.677 19.607ZM9.48498 4.99997C7.58868 4.99955 5.95267 6.33066 5.56745 8.18742C5.18224 10.0442 6.15369 11.9163 7.89366 12.6702C9.63362 13.4242 11.6639 12.8528 12.7552 11.302C13.8466 9.75126 13.699 7.64731 12.402 6.26399L13.007 6.86399L12.325 6.18399L12.313 6.17199C11.5648 5.41917 10.5464 4.99712 9.48498 4.99997Z"
-                  fill="#F7F7FC"
+            <div className="header-chat__settings-search">
+              <div className="header-chat__settings-search-input">
+                <input
+                  value={SearchTextValue}
+                  onChange={(e) => setSearchTextValue(e.target.value)}
+                  type="text"
+                  placeholder="Search..."
+                  className="header-chat__settings-search-input-field"
                 />
-              </svg>
+                <svg
+                  className="header-chat__settings-search-input-icon"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18.677 19.607L12.962 13.891C10.4196 15.6984 6.91642 15.2563 4.90285 12.8739C2.88929 10.4915 3.03714 6.96358 5.24298 4.75799C7.44824 2.55144 10.9765 2.40295 13.3594 4.4164C15.7422 6.42986 16.1846 9.93344 14.377 12.476L20.092 18.192L18.678 19.606L18.677 19.607ZM9.48498 4.99997C7.58868 4.99955 5.95267 6.33066 5.56745 8.18742C5.18224 10.0442 6.15369 11.9163 7.89366 12.6702C9.63362 13.4242 11.6639 12.8528 12.7552 11.302C13.8466 9.75126 13.699 7.64731 12.402 6.26399L13.007 6.86399L12.325 6.18399L12.313 6.17199C11.5648 5.41917 10.5464 4.99712 9.48498 4.99997Z"
+                    fill="#F7F7FC"
+                  />
+                </svg>
+              </div>
             </div>
           </div>
         </header>
@@ -750,12 +807,30 @@ function ChatPage() {
 
             {messages.map((message) => (
               <div
+                onMouseEnter={() => {
+                  setEmojiInMessage(message.id);
+                  setOpenEmojiInMessageContext(true);
+                }}
+                onMouseLeave={() => {
+                  setEmojiInMessage(null);
+                  setOpenEmojiInMessageContext(false);
+                }}
+                ref={(el) => {
+                  messageRefs.current[message.id] = el;
+                }}
                 key={message.tempId || message.id}
-                className={
-                  message.senderId === currentUserGoogleId
-                    ? "main-chats__chat-you"
-                    : "main-chats__chat-friends"
-                }
+                className={`
+                  ${
+                    message.senderId === currentUserGoogleId
+                      ? "main-chats__chat-you"
+                      : "main-chats__chat-friends"
+                  }
+                                  ${
+                                    highlightedMessageId === message.id
+                                      ? "highlighted"
+                                      : ""
+                                  }
+`}
                 style={{
                   filter: message.isLoading ? "blur(2px)" : "none",
                   opacity: message.isLoading ? 0.6 : 1,
@@ -763,8 +838,15 @@ function ChatPage() {
                   transition: "all 0.3s ease",
                 }}
               >
-                {/* Лоадер поверх повідомлення */}
-
+                {openEmojiInMessageContext && message.id === emojiInMessage && (
+                  <div className="emoji-picker">
+                    <EmojiPicker
+                      theme={Theme.DARK}
+                      reactionsDefaultOpen={true}
+                      className="emoji-picker-component"
+                    />
+                  </div>
+                )}
                 {isGroup ? (
                   <>
                     {chat?.chat?.participants?.map((p) => {
@@ -848,17 +930,28 @@ function ChatPage() {
                     {message.files?.length > 0
                       ? message.files.map((file) => {
                           return (
-                            <div key={file.id}>
+                            <div
+                              key={file.id}
+                              className={
+                                message.senderId === currentUserGoogleId
+                                  ? "chat-you__message__block-main"
+                                  : "chat-friends__message__block-main"
+                              }
+                            >
                               {file.fileType.startsWith("image/") ? (
-                                <img
-                                  className={
-                                    message.senderId === currentUserGoogleId
-                                      ? "chat-you__message__img"
-                                      : "chat-friends__message__img"
-                                  }
-                                  src={`${API_BASE_URL}${file.fileUrl}`}
-                                  alt={file.fileName || "image"}
-                                />
+                                <>
+                                  <img
+                                    className={
+                                      message.senderId === currentUserGoogleId
+                                        ? "chat-you__message__img"
+                                        : "chat-friends__message__img"
+                                    }
+                                    onClick={CheckImgFullScreen}
+                                    src={`${API_BASE_URL}${file.fileUrl}`}
+                                    alt={file.fileName || "image"}
+                                  />
+                                  <ImageModal />
+                                </>
                               ) : (
                                 <a
                                   href={`${API_BASE_URL}${file.fileUrl}`}
@@ -877,7 +970,15 @@ function ChatPage() {
                           );
                         })
                       : null}
-                    <div>{message.content}</div>
+                    <div
+                      className={
+                        message.senderId === currentUserGoogleId
+                          ? "chat-you__message__content"
+                          : "chat-friends__message__content"
+                      }
+                    >
+                      {message.content}
+                    </div>
                   </div>
                   <div
                     className={
@@ -957,6 +1058,26 @@ function ChatPage() {
                 style={{ display: "none" }}
                 onChange={handleFooterFileSelect}
               />
+            </div>
+            <div className="footer__emoji">
+              <img
+                src="/assets/happiness.png"
+                alt="emoji"
+                className="footer__emoji-icon"
+                onClick={() => setOpenEmojiPicker((prev) => !prev)}
+              />
+              <div>
+                <EmojiPicker
+                  theme={Theme.DARK}
+                  className="footer__emoji-picker"
+                  open={openEmojiPicker}
+                  onEmojiClick={(emoji) => {
+                    setNewMessage((prev) => `${prev} ${emoji.emoji}`);
+
+                    console.log(emoji, "emoji ");
+                  }}
+                />
+              </div>
             </div>
             <div className="footer__input">
               <input

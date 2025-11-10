@@ -49,7 +49,42 @@
     column-gap: 10px;
     padding-right: 20px;
     cursor: pointer;
+
+    &-search {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      column-gap: 8px;
+      &-input {
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        &-field {
+          font-family: var(--font-family);
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 171%;
+          color: var(--neutral-off-white);
+          background: var(--neutral-dark);
+          border-radius: 4px;
+          border: none;
+          padding: 6px 8px;
+          width: 150px;
+          height: 32px;
+        }
+
+        &-icon {
+          position: absolute;
+          right: 10px;
+          width: 16px;
+          height: 16px;
+          fill: var(--neutral-off-white);
+        }
+      }
+    }
   }
+
   &__arrow {
     cursor: pointer;
   }
@@ -280,6 +315,8 @@
   &__chat {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
     row-gap: 12px;
     padding-inline: 16px;
     &-avatar {
@@ -289,16 +326,20 @@
       object-fit: cover;
     }
     &-you {
+      pointer-events: auto;
+
       display: flex;
       flex-direction: row-reverse;
       column-gap: 10px;
       align-items: flex-end;
       row-gap: 10px;
-      width: 100%;
+      width: 200px;
       position: relative;
     }
 
     &-friends {
+      pointer-events: auto;
+
       display: flex;
       column-gap: 10px;
       flex-direction: row;
@@ -317,10 +358,11 @@
       min-width: 130px; // Мінімальна ширина
       background: var(--brand-color-dark-mode);
       justify-content: space-between;
-
+      position: relative;
       &__message {
         display: flex;
         flex-direction: column;
+        gap: 8px;
         justify-content: flex-end;
         align-items: flex-end;
         font-family: var(--font-family);
@@ -342,12 +384,13 @@
           margin-bottom: 4px;
         }
         &__img {
+          height: 200px;
           width: 100%; // ширина по батьківському контейнеру
           max-width: 200px; // обмеження максимальної ширини
           height: auto; // висота підлаштовується пропорційно
           object-fit: cover; // обрізає зайве, зберігаючи пропорції
           border-radius: 8px;
-
+          cursor: pointer;
           // Медіа-запити для різних девайсів
           @media (max-width: 768px) {
             max-width: 150px; // планшети
@@ -427,9 +470,17 @@
         overflow-wrap: break-word;
         hyphens: auto;
         max-width: 100%; // Важливо!
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
         &__img {
-          width: 200px;
-          height: 100px;
+          height: 200px;
+          width: 100%; // ширина по батьківському контейнеру
+          max-width: 200px; // обмеження максимальної ширини
+          height: auto; // висота підлаштовується пропорційно
+          object-fit: cover; // обрізає зайве, зберігаючи пропорції
+          border-radius: 8px;
+          cursor: pointer;
         }
         &__name {
           font-family: var(--font-family);
@@ -438,6 +489,42 @@
           line-height: 167%;
           color: var(--brand-color-dark-mode);
           margin-bottom: 4px;
+        }
+        &__file {
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 8px;
+          padding: 8px 12px;
+          background-color: var(--brand-color-dark);
+          color: var(--text-color);
+          border-radius: 8px;
+          width: 200px; // стандартна ширина
+          max-width: 100%; // адаптивно для маленьких екранів
+          height: auto; // висота під контент
+          text-decoration: none;
+          font-size: 14px;
+          font-weight: 500;
+          transition: background-color 0.2s ease, transform 0.2s ease;
+
+          // Іконка файлу (PDF, DOCX, TXT)
+          &::before {
+            content: "📄"; // можна замінити на реальну іконку через <img>
+            font-size: 18px;
+          }
+          &:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
+          }
+          @media (max-width: 768px) {
+            width: 150px;
+            font-size: 13px;
+          }
+
+          @media (max-width: 480px) {
+            width: 120px;
+            font-size: 12px;
+          }
         }
       }
 
@@ -456,10 +543,38 @@
   &__container {
     padding-top: 20px;
     width: 100%;
+    height: 50px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+  }
+
+  &__emoji {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    &-icon {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      padding-left: 20px;
+    }
+    &-picker {
+      position: absolute; // змінено на fixed
+      top: -500px; // від верхнього краю екрану
+      left: 20px; // або де потрібно
+      transform: scale(0.7);
+      transform-origin: bottom left;
+      z-index: 9999;
+      background-color: var(--brand-color-dark-mode);
+      // Додайте тінь для кращого вигляду
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
+    }
   }
   &__plus-add-file {
     position: relative;
@@ -495,21 +610,214 @@
 .loader-message {
   position: absolute;
   top: 50%;
-  left: 87%;
-  transform: translate(-50%, -50%);
+  right: 10px; // відступ від правого краю
+  transform: translateY(-50%);
   z-index: 1000;
-  @media (max-width: 600px) {
-    left: 70%;
-  }
-  @media (max-width: 760px) {
-    left: 80%;
-  }
+
   &__spinner {
     border: 4px solid var(--neutral-dark);
-    border-top: 4px solid var(--brand-color-dark-mode);
+    border-top: 4px solid var(--neutral-off-white);
     border-radius: 50%;
     width: 24px;
     height: 24px;
     animation: spin 1s linear infinite;
+  }
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.highlighted {
+  border-radius: 20px;
+  background-color: rgba(191, 191, 9, 0.337);
+  animation: highlight-pulse 0.5s ease-in-out;
+}
+@keyframes highlight-pulse {
+  0%,
+  100% {
+    background-color: rgba(255, 255, 0, 0.2);
+  }
+  50% {
+    background-color: rgba(255, 255, 0, 0.4);
+  }
+}
+.emoji-picker {
+  position: absolute;
+  z-index: 10000;
+  top: 100px; // Зміщуємо вгору від повідомлення
+  right: 400px;
+  transform: translateX(-50%); // Центруємо відносно повідомлення
+  border-radius: 12px;
+  padding: 8px;
+  rotate: 270deg;
+  // Компактна версія picker
+  &-component {
+    // Зменшуємо загальний розмір
+    transform: scale(0.8);
+    transform-origin: top center;
+    rotate: 180deg;
+    // Стилізуємо контейнер емодзі
+    .epr-emoji-category-content {
+      gap: 4px !important; // Відступи між емодзі
+      padding: 4px !important;
+    }
+
+    // Стилізуємо кожне емодзі
+    .epr-emoji {
+      rotate: 270deg;
+      width: 32px !important; // Розмір емодзі
+      height: 32px !important;
+      padding: 4px !important;
+      border-radius: 6px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: all 0.2s ease !important;
+
+      // Налаштування самої картинки емодзі
+      img {
+        width: 24px !important; // Розмір картинки (менше контейнера)
+        height: 24px !important;
+        object-fit: contain !important; // Щоб не обрізалося
+      }
+
+      &:hover {
+        background: var(--brand-color-dark-mode) !important;
+        transform: scale(1.1) !important;
+      }
+    }
+
+    // Стилізуємо категорії
+    .epr-emoji-category-label {
+      font-size: 12px !important;
+      padding: 4px 8px !important;
+      color: var(--neutral-off-white) !important;
+    }
+
+    // Зменшуємо header picker
+    .epr-header {
+      padding: 6px 8px !important;
+
+      .epr-search {
+        height: 32px !important;
+        font-size: 13px !important;
+      }
+    }
+
+    // Налаштування категорій навігації
+    .epr-category-nav {
+      padding: 4px !important;
+      gap: 4px !important;
+
+      button {
+        width: 28px !important;
+        height: 28px !important;
+        padding: 4px !important;
+
+        svg {
+          width: 18px !important;
+          height: 18px !important;
+        }
+      }
+    }
+
+    // Зменшуємо висоту прокрутки
+    .epr-body {
+      max-height: 250px !important;
+
+      &::-webkit-scrollbar {
+        width: 6px !important;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--brand-color-dark-mode) !important;
+        border-radius: 3px !important;
+      }
+    }
+  }
+
+  // Для позиціонування в різних контекстах
+  &--left {
+    left: 0;
+    transform: translateX(0);
+  }
+
+  &--right {
+    right: 0;
+    left: auto;
+    transform: translateX(0);
+  }
+
+  // Трикутник вказівник (опціонально)
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid var(--neutral-active);
+  }
+}
+
+// Адаптив для мобільних
+@media (max-width: 768px) {
+  .emoji-picker {
+    left: -20%;
+    transform: translateX(-50%) scale(0.9);
+
+    &-component {
+      transform: scale(0.7);
+
+      .epr-emoji {
+        width: 28px !important;
+        height: 28px !important;
+
+        img {
+          width: 20px !important;
+          height: 20px !important;
+        }
+      }
+
+      .epr-body {
+        max-height: 200px !important;
+      }
+    }
+  }
+}
+
+// Для повідомлень "you" (праворуч)
+.main-chats__chat-you {
+  position: relative;
+
+  .emoji-picker {
+    left: 10%;
+    transform: translateX(0);
+
+    &::after {
+      right: 20px;
+      left: auto;
+    }
+  }
+}
+
+// Для повідомлень "friends" (ліворуч)
+.main-chats__chat-friends {
+  position: relative;
+
+  .emoji-picker {
+    left: 0;
+    transform: translateX(0);
+
+    &::after {
+      left: 20px;
+    }
   }
 }
