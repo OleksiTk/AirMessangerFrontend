@@ -85,7 +85,6 @@ function ChatPage() {
   const currentUserGoogleId = localStorage.getItem("googleId");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const modalFileInputRef = useRef<HTMLInputElement>(null);
-  const [fileValues, setfileValues] = useState<File | undefined>();
   const [filesArray, setFilesArray] = useState<File[]>([]);
   const [isGroup, setIsGroup] = useState<boolean>(false);
   const [modalWindowFiles, setModalWindowFiles] = useState<boolean>(false);
@@ -99,7 +98,6 @@ function ChatPage() {
   const CancelSendFiles = () => {
     setModalWindowFiles(false);
     setFilesArray([]);
-    setfileValues(undefined);
   };
   const handleFooterFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -129,7 +127,6 @@ function ChatPage() {
         );
         return newArray;
       });
-      // setfileValues(selectedFile);
       setModalWindowFiles(true);
     }
     e.target.value = "";
@@ -162,7 +159,6 @@ function ChatPage() {
         );
         return newArray;
       });
-      // setfileValues(selectedFile);
     }
     e.target.value = "";
   };
@@ -676,9 +672,6 @@ function ChatPage() {
                                       );
 
                                       // Опціонально: Очищуємо fileValues якщо це був останній файл
-                                      if (filesArray.length === 1) {
-                                        setfileValues(undefined);
-                                      }
                                     }}
                                     className="send-files-modal__file-remove"
                                   >
@@ -699,11 +692,6 @@ function ChatPage() {
                                       setFilesArray((prevFiles) =>
                                         prevFiles.filter((_, i) => i !== index)
                                       );
-
-                                      // Опціонально: Очищуємо fileValues якщо це був останній файл
-                                      if (filesArray.length === 1) {
-                                        setfileValues(undefined);
-                                      }
                                     }}
                                     className="send-files-modal__file-remove"
                                   >
