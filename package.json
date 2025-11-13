@@ -14,14 +14,20 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.4",
     "@mui/material": "^7.3.4",
+    "@react-three/fiber": "^9.4.0",
+    "@react-three/postprocessing": "^3.0.4",
     "axios": "^1.12.2",
     "emoji-picker-react": "^4.15.0",
+    "gsap": "^3.13.0",
+    "ogl": "^1.0.11",
+    "postprocessing": "^6.38.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.3",
     "react-toastify": "^11.0.5",
     "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "three": "^0.181.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

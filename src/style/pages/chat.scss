@@ -1,6 +1,5 @@
 .chat {
   overflow-x: hidden; // Змінено на overflow-x
-  padding-inline: 8px;
 }
 
 .container {
@@ -17,6 +16,7 @@
   align-items: center;
   padding-bottom: 10px;
   flex: 1;
+
   &__name {
     display: flex;
     flex-direction: row;
@@ -30,6 +30,7 @@
     font-size: 18px;
     line-height: 167%;
     color: var(--neutral-off-white);
+    z-index: 2;
     &-group {
       display: flex;
       flex-direction: row;
@@ -49,7 +50,7 @@
     column-gap: 10px;
     padding-right: 20px;
     cursor: pointer;
-
+    z-index: 2;
     &-search {
       display: flex;
       flex-direction: row;
@@ -87,6 +88,7 @@
 
   &__arrow {
     cursor: pointer;
+    z-index: 2;
   }
 }
 
@@ -95,12 +97,12 @@
   width: 100vw;
   height: 100vh;
   background-color: var(--neutral-dark);
-  margin-inline: -8px;
+  // margin-inline: -8px;
   display: flex;
   flex-direction: column;
   overflow-x: hidden; // Додайте це!
   width: calc(100% + 16px); // Замість 100vw
-  padding-block: 10px;
+  // padding-block: 10px;
   position: relative;
   &__backdrop {
     position: fixed;
@@ -319,6 +321,7 @@
     justify-content: flex-end;
     row-gap: 12px;
     padding-inline: 16px;
+    z-index: 3;
     &-avatar {
       width: 40px;
       height: 40px;
@@ -443,6 +446,16 @@
         line-height: 160%;
         color: var(--neutral-off-white);
         margin-top: 4px;
+      }
+      &__footer-block-message {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+      }
+      &__emoji-likes {
+        display: flex;
+        gap: 6px;
+        padding-right: 2px;
       }
     }
 
@@ -782,7 +795,7 @@
   position: relative;
 
   .emoji-picker {
-    left: 10%;
+    left: 20%;
     transform: translateX(0);
   }
 }
@@ -796,4 +809,8 @@
     top: -700%;
     transform: translateX(0);
   }
+}
+.emojis-in-messages {
+  width: 20px;
+  height: 20px;
 }

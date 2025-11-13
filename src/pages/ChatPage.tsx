@@ -6,6 +6,8 @@ import { socket } from "../socket/socket";
 import { toast, ToastContainer } from "react-toastify";
 import { useImageModal } from "../hooks/useImageModal";
 import EmojiPicker, { Theme } from "emoji-picker-react";
+import Iridescence from "../components/background/Iridescence";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface Message {
@@ -16,8 +18,15 @@ interface Message {
   isRead: boolean;
   senderId: string;
   files: FileMessage[];
+  emojis?: Emoji[];
   isLoading?: boolean;
   tempId?: string;
+}
+interface Emoji {
+  emojiName: string;
+  emojiUrl: string;
+  id: number;
+  messageId: number;
 }
 interface FileMessage {
   fileName: string;
@@ -98,7 +107,6 @@ function ChatPage() {
   const [emojiInMessage, setEmojiInMessage] = useState<number | null>(null);
   const [openEmojiInMessageContext, setOpenEmojiInMessageContext] =
     useState<boolean>(false);
-  const [emojiLikes, setEmojiLikes] = useState("");
   const handleSvgClick = () => {
     fileInputRef.current?.click();
   };
@@ -286,7 +294,9 @@ function ChatPage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
   // Завантажити чат  з API
   useEffect(() => {
     if (!oneTryToTakeData.current) {
@@ -389,7 +399,9 @@ function ChatPage() {
       console.log("New message received:", message);
       setMessages((prev) => {
         // Якщо є tempId, замінюємо тимчасове повідомлення
-        if (message.tempId) {
+
+        if (message.tempId && message.senderId === currentUserGoogleId) {
+          console.log("Replacing temp message with tempId:", message.tempId);
           return prev.map((msg) =>
             msg.tempId === message.tempId
               ? { ...message, isLoading: false, tempId: undefined }
@@ -397,10 +409,13 @@ function ChatPage() {
           );
         }
 
-        // Перевіряємо чи повідомлення вже є
-        if (prev.some((msg) => msg.id === message.id)) {
+        // Перевіряємо чи повідомлення вже є (але НЕ перевіряємо id: 0)
+        if (message.id !== 0 && prev.some((msg) => msg.id === message.id)) {
+          console.log("⚠️ Message already exists, skipping");
           return prev;
         }
+
+        console.log("✅ Adding new message");
         return [...prev, message];
       });
     };
@@ -443,10 +458,39 @@ function ChatPage() {
         )
       );
     };
+    const takeEmojiLikes = (data: { messageId: number; emoji: Emoji }) => {
+      console.log("ось що прийшло", data);
 
+      setMessages((prev) =>
+        prev.map((msg) => {
+          // якщо це те саме повідомлення
+          if (msg.id === data.messageId) {
+            // додаємо або оновлюємо поле emojis (масив)
+            const updatedEmojis = [
+              ...(msg.emojis || []),
+              {
+                emojiName: data.emoji.emojiName,
+                emojiUrl: data.emoji.emojiUrl,
+                id: data.emoji.id,
+                messageId: data.messageId,
+              },
+            ];
+
+            return {
+              ...msg,
+              emojis: updatedEmojis,
+            };
+          }
+
+          // інакше залишаємо без змін
+          return msg;
+        })
+      );
+    };
     // Реєструємо всі обробники
     currentSocket.on("connect", handleConnect);
     currentSocket.on("disconnect", handleDisconnect);
+    currentSocket.on("emoji_added", takeEmojiLikes);
     currentSocket.on("receive_message", handleReceiveMessage);
     currentSocket.on("user_typing", handleUserTyping);
     currentSocket.on("user_joined", handleUserJoined);
@@ -470,7 +514,7 @@ function ChatPage() {
       currentSocket.off("user_joined", handleUserJoined);
       currentSocket.off("user_left", handleUserLeft);
       currentSocket.off("message_read", handleMessageRead);
-
+      currentSocket.off("emoji_added", takeEmojiLikes);
       currentSocket.emit("leave_chat", {
         chatId: chat.id,
         name_profile: currentUserProfile,
@@ -490,13 +534,15 @@ function ChatPage() {
       if (!chat || !currentUserGoogleId) {
         return;
       }
+      console.log(chat.id, "chat.id");
+
       if (isGroupChat) {
         currentSocket.emit("send_emoji", {
           chatId: chat.chat.id,
           emojiName: emojiName,
           emojiUrl: emojiUrl,
           googleId: currentUserGoogleId,
-          message: messageId,
+          messageId,
         });
       } else {
         currentSocket.emit("send_emoji", {
@@ -504,7 +550,7 @@ function ChatPage() {
           emojiName: emojiName,
           emojiUrl: emojiUrl,
           googleId: currentUserGoogleId,
-          message: messageId,
+          messageId,
         });
       }
     } catch (error) {
@@ -642,6 +688,7 @@ function ChatPage() {
           pauseOnHover
           theme="dark"
         />
+
         {/* Header */}
         <header className="header-chat">
           <div className="header-chat__arrow" onClick={() => navigate(-1)}>
@@ -724,6 +771,12 @@ function ChatPage() {
 
         {/* Messages */}
         <main className="main-chats">
+          <Iridescence
+            color={[0.2, 0.2, 0.6]}
+            mouseReact={false}
+            amplitude={0.1}
+            speed={1.0}
+          />
           <div className="main-chats__chat">
             {modalWindowFiles && (
               <>
@@ -919,7 +972,6 @@ function ChatPage() {
                               emoji.imageUrl,
                               message.id
                             );
-                            setEmojiLikes(emoji.imageUrl);
                           }}
                           theme={Theme.DARK}
                           reactionsDefaultOpen={true}
@@ -1024,40 +1076,65 @@ function ChatPage() {
                   <div
                     className={
                       message.senderId === currentUserGoogleId
-                        ? "chat-you__message-time"
-                        : "chat-friends__message-time"
+                        ? "chat-you__footer-block-message"
+                        : "chat-friends__footer-block-message"
                     }
                   >
-                    {message.createdAt ? (
-                      <div>
-                        {new Date(message.createdAt).toLocaleTimeString(
-                          "uk-UA",
-                          {
+                    <div
+                      className={
+                        message.senderId === currentUserGoogleId
+                          ? "chat-you__emoji-likes"
+                          : "chat-friends__emoji-likes"
+                      }
+                    >
+                      {message.emojis &&
+                        message.emojis.map((emoji, index) => (
+                          <img
+                            key={index}
+                            src={emoji.emojiUrl}
+                            alt="emoji"
+                            className="emojis-in-messages"
+                          />
+                        ))}
+                    </div>
+                    <div
+                      className={
+                        message.senderId === currentUserGoogleId
+                          ? "chat-you__message-time"
+                          : "chat-friends__message-time"
+                      }
+                    >
+                      {message.createdAt ? (
+                        <div>
+                          {new Date(message.createdAt).toLocaleTimeString(
+                            "uk-UA",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}{" "}
+                          ·{" "}
+                          {message.isLoading
+                            ? "Sending..."
+                            : message.isRead
+                            ? "Read"
+                            : "Sent"}
+                        </div>
+                      ) : (
+                        <div>
+                          {new Date().toLocaleTimeString("uk-UA", {
                             hour: "2-digit",
                             minute: "2-digit",
-                          }
-                        )}{" "}
-                        ·{" "}
-                        {message.isLoading
-                          ? "Sending..."
-                          : message.isRead
-                          ? "Read"
-                          : "Sent"}
-                      </div>
-                    ) : (
-                      <div>
-                        {new Date().toLocaleTimeString("uk-UA", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}{" "}
-                        ·{" "}
-                        {message.isLoading
-                          ? "Sending..."
-                          : message.isRead
-                          ? "Read"
-                          : "Sent"}
-                      </div>
-                    )}
+                          })}{" "}
+                          ·{" "}
+                          {message.isLoading
+                            ? "Sending..."
+                            : message.isRead
+                            ? "Read"
+                            : "Sent"}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

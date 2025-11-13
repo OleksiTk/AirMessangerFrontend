@@ -1,0 +1,8 @@
+.iridescence-container {
+  position: fixed; /* ← замість absolute */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh; /* на всю висоту екрану */
+  z-index: 0;
+}

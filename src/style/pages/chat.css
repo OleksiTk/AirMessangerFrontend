@@ -1,7 +1,6 @@
 @charset "UTF-8";
 .chat {
   overflow-x: hidden;
-  padding-inline: 8px;
 }
 
 .container {
@@ -33,6 +32,7 @@
   font-size: 18px;
   line-height: 167%;
   color: var(--neutral-off-white);
+  z-index: 2;
 }
 .header-chat__name-group {
   display: flex;
@@ -55,6 +55,7 @@
        column-gap: 10px;
   padding-right: 20px;
   cursor: pointer;
+  z-index: 2;
 }
 .header-chat__settings-search {
   display: flex;
@@ -90,6 +91,7 @@
 }
 .header-chat__arrow {
   cursor: pointer;
+  z-index: 2;
 }
 
 .main-chats {
@@ -97,12 +99,10 @@
   width: 100vw;
   height: 100vh;
   background-color: var(--neutral-dark);
-  margin-inline: -8px;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
   width: calc(100% + 16px);
-  padding-block: 10px;
   position: relative;
 }
 .main-chats__backdrop {
@@ -321,6 +321,7 @@
   justify-content: flex-end;
   row-gap: 12px;
   padding-inline: 16px;
+  z-index: 3;
 }
 .main-chats__chat-avatar {
   width: 40px;
@@ -452,6 +453,16 @@
   line-height: 160%;
   color: var(--neutral-off-white);
   margin-top: 4px;
+}
+.main-chats__chat .chat-you__footer-block-message {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+.main-chats__chat .chat-you__emoji-likes {
+  display: flex;
+  gap: 6px;
+  padding-right: 2px;
 }
 .main-chats__chat .chat-friends {
   display: flex;
@@ -754,7 +765,7 @@
   position: relative;
 }
 .main-chats__chat-you .emoji-picker {
-  left: 10%;
+  left: 20%;
   transform: translateX(0);
 }
 
@@ -765,4 +776,9 @@
   left: -36%;
   top: -700%;
   transform: translateX(0);
+}
+
+.emojis-in-messages {
+  width: 20px;
+  height: 20px;
 }/*# sourceMappingURL=chat.css.map */
