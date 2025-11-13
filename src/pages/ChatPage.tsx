@@ -98,6 +98,7 @@ function ChatPage() {
   const [emojiInMessage, setEmojiInMessage] = useState<number | null>(null);
   const [openEmojiInMessageContext, setOpenEmojiInMessageContext] =
     useState<boolean>(false);
+  const [emojiLikes, setEmojiLikes] = useState("");
   const handleSvgClick = () => {
     fileInputRef.current?.click();
   };
@@ -109,6 +110,7 @@ function ChatPage() {
     setModalWindowFiles(false);
     setFilesArray([]);
   };
+
   const handleFooterFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
 
@@ -479,7 +481,36 @@ function ChatPage() {
       }
     };
   }, [chat]);
-
+  const CreateEmojiMessages = async (
+    emojiName: string,
+    emojiUrl: string,
+    messageId: number
+  ) => {
+    try {
+      if (!chat || !currentUserGoogleId) {
+        return;
+      }
+      if (isGroupChat) {
+        currentSocket.emit("send_emoji", {
+          chatId: chat.chat.id,
+          emojiName: emojiName,
+          emojiUrl: emojiUrl,
+          googleId: currentUserGoogleId,
+          message: messageId,
+        });
+      } else {
+        currentSocket.emit("send_emoji", {
+          chatId: chat.id,
+          emojiName: emojiName,
+          emojiUrl: emojiUrl,
+          googleId: currentUserGoogleId,
+          message: messageId,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   // Надіслати повідомлення
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !chat || !currentUserGoogleId) {
@@ -807,14 +838,6 @@ function ChatPage() {
 
             {messages.map((message) => (
               <div
-                onMouseEnter={() => {
-                  setEmojiInMessage(message.id);
-                  setOpenEmojiInMessageContext(true);
-                }}
-                onMouseLeave={() => {
-                  setEmojiInMessage(null);
-                  setOpenEmojiInMessageContext(false);
-                }}
                 ref={(el) => {
                   messageRefs.current[message.id] = el;
                 }}
@@ -838,15 +861,6 @@ function ChatPage() {
                   transition: "all 0.3s ease",
                 }}
               >
-                {openEmojiInMessageContext && message.id === emojiInMessage && (
-                  <div className="emoji-picker">
-                    <EmojiPicker
-                      theme={Theme.DARK}
-                      reactionsDefaultOpen={true}
-                      className="emoji-picker-component"
-                    />
-                  </div>
-                )}
                 {isGroup ? (
                   <>
                     {chat?.chat?.participants?.map((p) => {
@@ -880,12 +894,39 @@ function ChatPage() {
                 )}
 
                 <div
+                  onMouseEnter={() => {
+                    setEmojiInMessage(message.id);
+                    setOpenEmojiInMessageContext(true);
+                  }}
+                  onMouseLeave={() => {
+                    setEmojiInMessage(null);
+                    setOpenEmojiInMessageContext(false);
+                  }}
                   className={
                     message.senderId === currentUserGoogleId
                       ? "chat-you"
                       : "chat-friends"
                   }
                 >
+                  {openEmojiInMessageContext &&
+                    message.id === emojiInMessage && (
+                      <div className="emoji-picker">
+                        <EmojiPicker
+                          onEmojiClick={(emoji) => {
+                            console.log(emoji);
+                            CreateEmojiMessages(
+                              emoji.unified,
+                              emoji.imageUrl,
+                              message.id
+                            );
+                            setEmojiLikes(emoji.imageUrl);
+                          }}
+                          theme={Theme.DARK}
+                          reactionsDefaultOpen={true}
+                          className="emoji-picker-component"
+                        />
+                      </div>
+                    )}
                   {message.isLoading && (
                     <div className="loader-message">
                       <div className="loader-message__spinner" />

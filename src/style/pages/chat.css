@@ -317,7 +317,7 @@
 .main-chats__chat {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: flex-end;
   row-gap: 12px;
   padding-inline: 16px;
@@ -333,11 +333,11 @@
   pointer-events: auto;
   display: flex;
   flex-direction: row-reverse;
+  justify-content: flex-start; /* Змінено з space-between */
   -moz-column-gap: 10px;
        column-gap: 10px;
   align-items: flex-end;
-  row-gap: 10px;
-  width: 200px;
+  width: 100%; /* Змінено з 200px */
   position: relative;
 }
 .main-chats__chat-friends {
@@ -347,8 +347,8 @@
        column-gap: 10px;
   flex-direction: row;
   align-items: flex-end;
-  row-gap: 10px;
-  width: 100%;
+  width: 100%; /* Змінено з 200px */
+  position: relative;
 }
 .main-chats__chat .chat-you {
   display: flex;
@@ -417,7 +417,7 @@
   background-color: var(--brand-color-dark);
   color: var(--text-color);
   border-radius: 8px;
-  width: 200px;
+  width: 100px;
   max-width: 100%;
   height: auto;
   text-decoration: none;
@@ -507,7 +507,7 @@
   background-color: var(--brand-color-dark);
   color: var(--text-color);
   border-radius: 8px;
-  width: 200px;
+  width: 100px;
   max-width: 100%;
   height: auto;
   text-decoration: none;
@@ -648,7 +648,7 @@
 .emoji-picker {
   position: absolute;
   z-index: 10000;
-  top: 100px;
+  top: 200px;
   right: 400px;
   transform: translateX(-50%);
   border-radius: 12px;
@@ -729,18 +729,6 @@
   left: auto;
   transform: translateX(0);
 }
-.emoji-picker::after {
-  content: "";
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top: 8px solid var(--neutral-active);
-}
 
 @media (max-width: 768px) {
   .emoji-picker {
@@ -769,18 +757,12 @@
   left: 10%;
   transform: translateX(0);
 }
-.main-chats__chat-you .emoji-picker::after {
-  right: 20px;
-  left: auto;
-}
 
 .main-chats__chat-friends {
   position: relative;
 }
 .main-chats__chat-friends .emoji-picker {
-  left: 0;
+  left: -36%;
+  top: -700%;
   transform: translateX(0);
-}
-.main-chats__chat-friends .emoji-picker::after {
-  left: 20px;
 }/*# sourceMappingURL=chat.css.map */

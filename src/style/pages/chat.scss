@@ -315,7 +315,7 @@
   &__chat {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: flex-end;
     row-gap: 12px;
     padding-inline: 16px;
@@ -327,25 +327,23 @@
     }
     &-you {
       pointer-events: auto;
-
       display: flex;
       flex-direction: row-reverse;
+      justify-content: flex-start; /* Змінено з space-between */
       column-gap: 10px;
       align-items: flex-end;
-      row-gap: 10px;
-      width: 200px;
+      width: 100%; /* Змінено з 200px */
       position: relative;
     }
 
     &-friends {
       pointer-events: auto;
-
       display: flex;
       column-gap: 10px;
       flex-direction: row;
       align-items: flex-end;
-      row-gap: 10px;
-      width: 100%;
+      width: 100%; /* Змінено з 200px */
+      position: relative;
     }
 
     .chat-you {
@@ -409,7 +407,7 @@
           background-color: var(--brand-color-dark);
           color: var(--text-color);
           border-radius: 8px;
-          width: 200px; // стандартна ширина
+          width: 100px; // стандартна ширина
           max-width: 100%; // адаптивно для маленьких екранів
           height: auto; // висота під контент
           text-decoration: none;
@@ -454,8 +452,8 @@
       align-items: flex-start;
       border-radius: 16px 16px 16px 0;
       padding: 10px;
-      max-width: 70%; // Адаптивна ширина
-      min-width: 130px;
+      max-width: 70%; // Адаптивна ширина (максимум 70% екрану)
+      min-width: 130px; // Мінімальна ширина
       background: var(--neutral-active);
       justify-content: space-between;
 
@@ -499,7 +497,7 @@
           background-color: var(--brand-color-dark);
           color: var(--text-color);
           border-radius: 8px;
-          width: 200px; // стандартна ширина
+          width: 100px; // стандартна ширина
           max-width: 100%; // адаптивно для маленьких екранів
           height: auto; // висота під контент
           text-decoration: none;
@@ -648,7 +646,7 @@
 .emoji-picker {
   position: absolute;
   z-index: 10000;
-  top: 100px; // Зміщуємо вгору від повідомлення
+  top: 200px; // Зміщуємо вгору від повідомлення
   right: 400px;
   transform: translateX(-50%); // Центруємо відносно повідомлення
   border-radius: 12px;
@@ -751,20 +749,6 @@
     left: auto;
     transform: translateX(0);
   }
-
-  // Трикутник вказівник (опціонально)
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 8px solid var(--neutral-active);
-  }
 }
 
 // Адаптив для мобільних
@@ -800,11 +784,6 @@
   .emoji-picker {
     left: 10%;
     transform: translateX(0);
-
-    &::after {
-      right: 20px;
-      left: auto;
-    }
   }
 }
 
@@ -813,11 +792,8 @@
   position: relative;
 
   .emoji-picker {
-    left: 0;
+    left: -36%;
+    top: -700%;
     transform: translateX(0);
-
-    &::after {
-      left: 20px;
-    }
   }
 }

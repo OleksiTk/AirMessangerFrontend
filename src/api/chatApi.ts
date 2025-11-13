@@ -153,7 +153,36 @@ export const chatApi = {
       throw error;
     }
   },
+  async createEmojiMessages(
+    profileName: string,
+    emojiName: string,
+    imageUrl: string
+  ) {
+    try {
+      const DataSend = {
+        emojiName: emojiName,
+        imageUrl: imageUrl,
+      };
+      const res = await fetch(
+        `${API_BASE_URL}/api/chat?profileName=${profileName}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(DataSend),
+        }
+      );
 
+      if (!res.ok) {
+        throw new Error(`Failed to get chats: ${res.statusText}`);
+      }
+
+      return res.json();
+    } catch (error) {
+      console.error("Error getting chats:", error);
+      throw error;
+    }
+  },
   // Отримати повідомлення чату
   async getChatMessages(chatId: number, limit = 50, offset = 0) {
     try {
