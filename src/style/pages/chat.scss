@@ -547,6 +547,16 @@
         color: var(--neutral-disabled);
         margin-top: 4px;
       }
+      &__footer-block-message {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row-reverse;
+      }
+      &__emoji-likes {
+        display: flex;
+        gap: 6px;
+        padding-left: 2px;
+      }
     }
   }
 }
@@ -811,6 +821,16 @@
   }
 }
 .emojis-in-messages {
+  background-color: var(--brand-color-light);
+  border-radius: 4px;
   width: 20px;
   height: 20px;
+}
+.emoji-like-count {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 171%;
+  color: var(--neutral-off-white);
+  margin-left: 2px;
 }

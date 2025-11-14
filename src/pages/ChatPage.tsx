@@ -6,7 +6,7 @@ import { socket } from "../socket/socket";
 import { toast, ToastContainer } from "react-toastify";
 import { useImageModal } from "../hooks/useImageModal";
 import EmojiPicker, { Theme } from "emoji-picker-react";
-import Iridescence from "../components/background/Iridescence";
+// import Iridescence from "../components/background/Iridescence";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -23,8 +23,8 @@ interface Message {
   tempId?: string;
 }
 interface Emoji {
-  emojiName: string;
-  emojiUrl: string;
+  name: string;
+  imgUrl: string;
   id: number;
   messageId: number;
 }
@@ -469,8 +469,8 @@ function ChatPage() {
             const updatedEmojis = [
               ...(msg.emojis || []),
               {
-                emojiName: data.emoji.emojiName,
-                emojiUrl: data.emoji.emojiUrl,
+                name: data.emoji.name,
+                imgUrl: data.emoji.imgUrl,
                 id: data.emoji.id,
                 messageId: data.messageId,
               },
@@ -771,12 +771,6 @@ function ChatPage() {
 
         {/* Messages */}
         <main className="main-chats">
-          <Iridescence
-            color={[0.2, 0.2, 0.6]}
-            mouseReact={false}
-            amplitude={0.1}
-            speed={1.0}
-          />
           <div className="main-chats__chat">
             {modalWindowFiles && (
               <>
@@ -1088,14 +1082,54 @@ function ChatPage() {
                       }
                     >
                       {message.emojis &&
-                        message.emojis.map((emoji, index) => (
-                          <img
-                            key={index}
-                            src={emoji.emojiUrl}
-                            alt="emoji"
-                            className="emojis-in-messages"
-                          />
-                        ))}
+                        message.emojis.map((emoji, index) => {
+                          if (!message.emojis) return null;
+                          const prev = message.emojis[index - 1];
+
+                          // Якщо це НЕ початок групи — нічого не показуємо
+                          if (prev && prev.name === emoji.name) return null;
+
+                          // Рахуємо скільки однакових підряд
+                          let count = 1;
+                          let i = index;
+
+                          while (
+                            message.emojis[i + 1] &&
+                            message.emojis[i + 1].name === emoji.name
+                          ) {
+                            count++;
+                            i++;
+                          }
+
+                          // Якщо група — малюємо лічильник
+                          if (count > 1) {
+                            return (
+                              <div
+                                key={emoji.id + index}
+                                className="emoji-group"
+                              >
+                                <img
+                                  src={emoji.imgUrl}
+                                  alt="emoji"
+                                  className="emojis-in-messages"
+                                />
+                                <span className="emoji-like-count">
+                                  {count}
+                                </span>
+                              </div>
+                            );
+                          }
+
+                          // Інакше одиничний емодзі
+                          return (
+                            <img
+                              key={emoji.id}
+                              src={emoji.imgUrl}
+                              alt="emoji"
+                              className="emojis-in-messages"
+                            />
+                          );
+                        })}
                     </div>
                     <div
                       className={
