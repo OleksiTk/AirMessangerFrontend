@@ -6,7 +6,8 @@ import { socket } from "../socket/socket";
 import { toast, ToastContainer } from "react-toastify";
 import { useImageModal } from "../hooks/useImageModal";
 import EmojiPicker, { Theme } from "emoji-picker-react";
-// import Iridescence from "../components/background/Iridescence";
+import InfoAboutChat from "../components/ui/InfoAboutChat";
+import Iridescence from "../components/background/Iridescence";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -48,6 +49,7 @@ interface Chat {
       user: {
         avatar: string;
         name: string;
+        name_profile: string;
         last_name: string;
       };
     }
@@ -107,6 +109,9 @@ function ChatPage() {
   const [emojiInMessage, setEmojiInMessage] = useState<number | null>(null);
   const [openEmojiInMessageContext, setOpenEmojiInMessageContext] =
     useState<boolean>(false);
+  const [isOpenInfoAboutChat, setIsOpenInfoAboutChat] =
+    useState<boolean>(false);
+
   const handleSvgClick = () => {
     fileInputRef.current?.click();
   };
@@ -688,7 +693,35 @@ function ChatPage() {
           pauseOnHover
           theme="dark"
         />
-
+        {isOpenInfoAboutChat && (
+          <>
+            <div className="modal-blur-bg"></div>
+            <InfoAboutChat
+              isGroupChatCheck={isGroup}
+              isOpenModelInfoChat={setIsOpenInfoAboutChat}
+              membersInGroup={chat?.chat?.participants || []}
+              nameProfile={
+                isGroup
+                  ? chat?.chat?.name || "name"
+                  : chat?.participants?.find(
+                      (p) => p.userId !== currentUserGoogleId
+                    )?.user?.name_profile || "name"
+              }
+              nameUser={
+                chat?.participants?.find(
+                  (p) => p.userId !== currentUserGoogleId
+                )?.user?.name || "name"
+              }
+              avatarUser={
+                isGroup
+                  ? chat?.chat?.avatar || `/assets/group-avatar.png`
+                  : chat?.participants?.find(
+                      (p) => p.userId !== currentUserGoogleId
+                    )?.user?.avatar || `/assets/NoneUserAvatar.jpg`
+              }
+            />
+          </>
+        )}
         {/* Header */}
         <header className="header-chat">
           <div className="header-chat__arrow" onClick={() => navigate(-1)}>
@@ -707,7 +740,12 @@ function ChatPage() {
           </div>
           <div className="header-chat__name">
             {isGroup ? (
-              <div className="header-chat__name-group">
+              <div
+                className="header-chat__name-group"
+                onClick={() => {
+                  setIsOpenInfoAboutChat(true);
+                }}
+              >
                 <img
                   src={chat?.chat?.avatar}
                   alt="avatar group"
@@ -722,7 +760,13 @@ function ChatPage() {
                 {chat?.participants?.map((p) => {
                   if (p.userId !== currentUserGoogleId) {
                     return (
-                      <div key={p.userId} className="header-chat__name-group">
+                      <div
+                        key={p.userId}
+                        className="header-chat__name-group"
+                        onClick={() => {
+                          setIsOpenInfoAboutChat(true);
+                        }}
+                      >
                         <img
                           className="header-chat__name-avatar"
                           src={p.user.avatar || `/assets/NoneUserAvatar.jpg`}
@@ -771,6 +815,8 @@ function ChatPage() {
 
         {/* Messages */}
         <main className="main-chats">
+          {/* <Iridescence color={[0.2, 0.2, 0.8]} /> */}
+
           <div className="main-chats__chat">
             {modalWindowFiles && (
               <>
