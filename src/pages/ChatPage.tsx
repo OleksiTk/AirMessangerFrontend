@@ -7,7 +7,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { useImageModal } from "../hooks/useImageModal";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import InfoAboutChat from "../components/ui/InfoAboutChat";
-import Iridescence from "../components/background/Iridescence";
+
+import ChatsLoader from "../components/ui/ChatsLoader";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -111,6 +112,27 @@ function ChatPage() {
     useState<boolean>(false);
   const [isOpenInfoAboutChat, setIsOpenInfoAboutChat] =
     useState<boolean>(false);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target as Node)
+      ) {
+        setOpenEmojiPicker(false);
+      }
+    };
+
+    // Додаємо слухач тільки якщо picker відкритий
+    if (openEmojiPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    // Видаляємо слухач при закритті або розмонтуванні
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openEmojiPicker]);
 
   const handleSvgClick = () => {
     fileInputRef.current?.click();
@@ -652,30 +674,11 @@ function ChatPage() {
     console.log(filesArray);
   }, [filesArray]);
   if (loading) {
-    return (
-      <div className="chat">
-        <div className="container">
-          <div style={{ textAlign: "center", padding: "20px" }}>
-            Loading chat...
-          </div>
-        </div>
-      </div>
-    );
+    return <ChatsLoader checkError={false} />;
   }
 
   if (error) {
-    return (
-      <div className="chat">
-        <div className="container">
-          <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
-            Error: {error}
-            <button onClick={() => navigate(-1)} style={{ marginTop: "10px" }}>
-              Go Back
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+    return <ChatsLoader checkError={true} />;
   }
 
   return (
@@ -815,8 +818,6 @@ function ChatPage() {
 
         {/* Messages */}
         <main className="main-chats">
-          {/* <Iridescence color={[0.2, 0.2, 0.8]} /> */}
-
           <div className="main-chats__chat">
             {modalWindowFiles && (
               <>
@@ -1246,6 +1247,10 @@ function ChatPage() {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
                 onClick={handleSvgClick}
+                style={{
+                  cursor: "pointer",
+                  color: "blue",
+                }}
               >
                 <path d="M8 8V14H6V8H0V6H6V0H8V6H14V8H8Z" fill="#ADB5BD" />
               </svg>
@@ -1257,9 +1262,13 @@ function ChatPage() {
                 onChange={handleFooterFileSelect}
               />
             </div>
-            <div className="footer__emoji">
+            <div className="footer__emoji" ref={emojiPickerRef}>
               <img
-                src="/assets/happiness.png"
+                src={
+                  openEmojiPicker
+                    ? "/assets/happy-active.png"
+                    : "/assets/happy.png"
+                }
                 alt="emoji"
                 className="footer__emoji-icon"
                 onClick={() => setOpenEmojiPicker((prev) => !prev)}
@@ -1271,8 +1280,7 @@ function ChatPage() {
                   open={openEmojiPicker}
                   onEmojiClick={(emoji) => {
                     setNewMessage((prev) => `${prev} ${emoji.emoji}`);
-
-                    console.log(emoji, "emoji ");
+                    console.log(emoji, "emoji");
                   }}
                 />
               </div>

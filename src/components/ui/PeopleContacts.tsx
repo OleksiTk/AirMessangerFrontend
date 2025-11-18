@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { contactsApi } from "../../api/contacts";
 import { socket } from "../../socket/socket";
 import { chatApi } from "../../api/chatApi";
+import ChatSkeletonLoader from "./ChatSkeletonLoader";
 interface Contact {
   id: number;
   avatar?: string | null;
@@ -126,9 +127,12 @@ function PeopleContacts({ Pages }: { Pages: string }) {
   if (loading) {
     return (
       <div className="main__chats">
-        <div style={{ padding: "20px", textAlign: "center" }}>
-          Loading contacts...
+        <div className="main__chats-input-search">
+          <Container maxWidth="sm" sx={{ paddingLeft: 0 }}>
+            <SearchInput />
+          </Container>
         </div>
+        <ChatSkeletonLoader />
       </div>
     );
   }

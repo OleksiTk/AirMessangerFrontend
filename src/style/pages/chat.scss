@@ -64,14 +64,35 @@
 
         &-field {
           font-family: var(--font-family);
-          font-weight: 400;
+          font-weight: 600;
           font-size: 14px;
           line-height: 171%;
           color: var(--neutral-off-white);
-          background: var(--neutral-dark);
-          border-radius: 4px;
-          border: none;
+
+          // Ефект рідкого скла (glassmorphism)
+          background: rgba(33, 37, 41, 0.6); // напівпрозорий темний фон
+          backdrop-filter: blur(20px) saturate(180%); // розмиття фону позаду
+          -webkit-backdrop-filter: blur(20px) saturate(180%); // для Safari
+
+          border: 1px solid rgba(255, 255, 255, 0.1); // тонка світла рамка
+          border-radius: 10px;
           padding: 6px 8px;
+          width: 80%;
+          height: 36px;
+
+          transition: all 0.3s ease;
+
+          &:focus {
+            outline: none;
+            background: rgba(33, 37, 41, 0.7);
+            border-color: rgba(55, 95, 255, 0.5);
+            box-shadow: 0 0 0 3px rgba(55, 95, 255, 0.1);
+          }
+
+          &::placeholder {
+            color: rgba(173, 181, 189, 0.6);
+          }
+
           width: 150px;
           height: 32px;
         }
@@ -570,11 +591,13 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
   }
 
   &__emoji {
     position: relative;
     width: 20px;
+
     height: 20px;
     &-icon {
       position: absolute;
@@ -583,7 +606,6 @@
       cursor: pointer;
       width: 24px;
       height: 24px;
-      padding-left: 20px;
     }
     &-picker {
       position: absolute; // змінено на fixed
@@ -613,19 +635,39 @@
   }
   &__input {
     width: 100%;
-
+    @media (max-width: 600px) {
+      width: 70%;
+    }
     &-text {
       font-family: var(--font-family);
       font-weight: 600;
       font-size: 14px;
       line-height: 171%;
       color: var(--neutral-off-white);
-      background: var(--neutral-dark);
-      border-radius: 4px;
-      border: none;
+
+      // Ефект рідкого скла (glassmorphism)
+      background: rgba(33, 37, 41, 0.6); // напівпрозорий темний фон
+      backdrop-filter: blur(20px) saturate(180%); // розмиття фону позаду
+      -webkit-backdrop-filter: blur(20px) saturate(180%); // для Safari
+
+      border: 1px solid rgba(255, 255, 255, 0.1); // тонка світла рамка
+      border-radius: 10px;
       padding: 6px 8px;
       width: 80%;
       height: 36px;
+
+      transition: all 0.3s ease;
+
+      &:focus {
+        outline: none;
+        background: rgba(33, 37, 41, 0.7);
+        border-color: rgba(55, 95, 255, 0.5);
+        box-shadow: 0 0 0 3px rgba(55, 95, 255, 0.1);
+      }
+
+      &::placeholder {
+        color: rgba(173, 181, 189, 0.6);
+      }
     }
   }
 }
@@ -670,168 +712,189 @@
 .emoji-picker {
   position: absolute;
   z-index: 10000;
-  top: 200px; // Зміщуємо вгору від повідомлення
-  right: 400px;
-  transform: translateX(-50%); // Центруємо відносно повідомлення
-  border-radius: 12px;
-  padding: 8px;
-  rotate: 270deg;
+
   // Компактна версія picker
   &-component {
-    // Зменшуємо загальний розмір
-    transform: scale(0.8);
-    transform-origin: top center;
-    rotate: 180deg;
+    transform: scale(0.65);
+    transform-origin: top left;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    overflow: hidden;
+
     // Стилізуємо контейнер емодзі
     .epr-emoji-category-content {
-      gap: 4px !important; // Відступи між емодзі
+      gap: 2px !important;
       padding: 4px !important;
     }
 
     // Стилізуємо кожне емодзі
     .epr-emoji {
-      rotate: 270deg;
-      width: 32px !important; // Розмір емодзі
-      height: 32px !important;
-      padding: 4px !important;
-      border-radius: 6px !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      transition: all 0.2s ease !important;
+      width: 36px !important;
+      height: 36px !important;
+      padding: 6px !important;
+      border-radius: 8px !important;
+      transition: all 0.15s ease !important;
 
-      // Налаштування самої картинки емодзі
       img {
-        width: 24px !important; // Розмір картинки (менше контейнера)
+        width: 24px !important;
         height: 24px !important;
-        object-fit: contain !important; // Щоб не обрізалося
+        object-fit: contain !important;
       }
 
       &:hover {
         background: var(--brand-color-dark-mode) !important;
-        transform: scale(1.1) !important;
+        transform: scale(1.15) !important;
       }
     }
 
-    // Стилізуємо категорії
-    .epr-emoji-category-label {
-      font-size: 12px !important;
-      padding: 4px 8px !important;
-      color: var(--neutral-off-white) !important;
-    }
-
-    // Зменшуємо header picker
+    // Зменшуємо header
     .epr-header {
-      padding: 6px 8px !important;
+      padding: 8px !important;
 
       .epr-search {
-        height: 32px !important;
-        font-size: 13px !important;
+        height: 36px !important;
+        font-size: 14px !important;
       }
     }
 
-    // Налаштування категорій навігації
+    // Категорії навігації
     .epr-category-nav {
-      padding: 4px !important;
+      padding: 6px !important;
       gap: 4px !important;
 
       button {
-        width: 28px !important;
-        height: 28px !important;
-        padding: 4px !important;
+        width: 32px !important;
+        height: 32px !important;
+        padding: 6px !important;
 
         svg {
-          width: 18px !important;
-          height: 18px !important;
+          width: 20px !important;
+          height: 20px !important;
         }
       }
     }
 
-    // Зменшуємо висоту прокрутки
+    // Висота прокрутки
     .epr-body {
-      max-height: 250px !important;
+      max-height: 280px !important;
 
       &::-webkit-scrollbar {
-        width: 6px !important;
+        width: 8px !important;
       }
 
       &::-webkit-scrollbar-thumb {
         background: var(--brand-color-dark-mode) !important;
-        border-radius: 3px !important;
+        border-radius: 4px !important;
       }
     }
   }
+}
 
-  // Для позиціонування в різних контекстах
-  &--left {
-    left: 0;
-    transform: translateX(0);
-  }
+// Емодзі в повідомленнях
+.emojis-in-messages {
+  background-color: var(--brand-color-light);
+  border-radius: 4px;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
 
-  &--right {
+.emoji-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: rgba(55, 95, 255, 0.15);
+  border-radius: 12px;
+  padding: 2px 8px 2px 4px;
+}
+
+.emoji-like-count {
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--neutral-off-white);
+}
+
+// Позиціонування для повідомлень "you" (праворуч)
+.main-chats__chat-you {
+  position: relative;
+
+  .emoji-picker {
+    top: -40px;
     right: 0;
-    left: auto;
-    transform: translateX(0);
+    transform-origin: top right;
+  }
+}
+
+// Позиціонування для повідомлень "friends" (ліворуч)
+.main-chats__chat-friends {
+  position: relative;
+
+  .emoji-picker {
+    top: -40px;
+    left: 0;
+    transform-origin: top left;
+  }
+}
+
+// Адаптив для планшетів
+@media (max-width: 1024px) {
+  .emoji-picker-component {
+    transform: scale(0.6) !important;
   }
 }
 
 // Адаптив для мобільних
 @media (max-width: 768px) {
   .emoji-picker {
-    left: -20%;
-    transform: translateX(-50%) scale(0.9);
+    // Для мобільних показуємо по центру екрану
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 10001;
 
     &-component {
-      transform: scale(0.7);
-
-      .epr-emoji {
-        width: 28px !important;
-        height: 28px !important;
-
-        img {
-          width: 20px !important;
-          height: 20px !important;
-        }
-      }
+      transform: scale(0.85) !important;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
 
       .epr-body {
-        max-height: 200px !important;
+        max-height: 240px !important;
       }
     }
   }
-}
 
-// Для повідомлень "you" (праворуч)
-.main-chats__chat-you {
-  position: relative;
+  // Додаємо backdrop для мобільних
+  .emoji-picker::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    // background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+  }
 
-  .emoji-picker {
-    left: 20%;
-    transform: translateX(0);
+  .main-chats__chat-you .emoji-picker,
+  .main-chats__chat-friends .emoji-picker {
+    transform: translate(-50%, -50%) !important;
   }
 }
 
-// Для повідомлень "friends" (ліворуч)
-.main-chats__chat-friends {
-  position: relative;
-
-  .emoji-picker {
-    left: -36%;
-    top: -700%;
-    transform: translateX(0);
+// Додаткові стилі для анімації появи
+@keyframes emojiPickerFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
-.emojis-in-messages {
-  background-color: var(--brand-color-light);
-  border-radius: 4px;
-  width: 20px;
-  height: 20px;
-}
-.emoji-like-count {
-  font-family: var(--font-family);
-  font-weight: 400;
-  font-size: 10px;
-  line-height: 171%;
-  color: var(--neutral-off-white);
-  margin-left: 2px;
+
+.emoji-picker-component {
+  animation: emojiPickerFadeIn 0.2s ease-out;
 }

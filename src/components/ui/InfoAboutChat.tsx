@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "../../style/ui/modelWindowChatinfo.css";
 import { userInfo } from "../../api/userInfo";
 import { chatApi } from "../../api/chatApi";
@@ -22,25 +22,49 @@ function InfoAboutChat({
   const [isOpenAddPeople, setIsOpenAddPeople] = useState(false);
   const [findName, setFindName] = useState<string>("");
   const [arrayName, setArrayName] = useState<Array<any>>([]);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Закриття модалки при кліку на backdrop
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        isOpenModelInfoChat(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpenModelInfoChat]);
+
+  // Закриття по ESC
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        isOpenModelInfoChat(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpenModelInfoChat]);
+
   async function FindUser() {
     try {
       if (!findName.trim()) {
-        // ← Перевіримо, чи не пуста строка
-        setFindName("");
+        setArrayName([]);
         return;
       }
 
-      console.log("Пошук контакту:", findName);
       const contacts = await userInfo.GetInfoContacts(findName);
 
       if (contacts && Array.isArray(contacts)) {
-        console.log("Found users:", contacts);
         setArrayName(contacts);
       }
     } catch (error) {
       console.error("Error finding user:", error);
     }
   }
+
   async function HandlerAddGroupsContacts(name_profile: string) {
     try {
       const addContacts = await chatApi.addToGroupsUser(name_profile);
@@ -53,8 +77,6 @@ function InfoAboutChat({
         if (userToAdd) {
           setChatsMembers((prev) => [...prev, { user: userToAdd }]);
         }
-
-        console.log("succes", addContacts);
       }
     } catch (error) {
       console.log(error);
@@ -62,10 +84,14 @@ function InfoAboutChat({
   }
 
   useEffect(() => {
-    FindUser();
+    const timeoutId = setTimeout(() => {
+      FindUser();
+    }, 300); // Debounce 300ms
+
+    return () => clearTimeout(timeoutId);
   }, [findName]);
   return (
-    <div className="model-info-chat">
+    <div className="model-info-chat" ref={modalRef}>
       <div className="model-info-chat__container">
         {isGroupChat ? (
           <>
