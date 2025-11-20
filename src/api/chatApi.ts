@@ -94,6 +94,22 @@ export const chatApi = {
       console.log("something went wrong on add", error);
     }
   },
+  async joinToGroups(name_groups: string) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/chat/join-to-groups`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name_groups,
+        }),
+        credentials: "include",
+      });
+
+      return res.json();
+    } catch (error) {
+      console.log(error);
+    }
+  },
   async getGroups() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/chat/get-groups`, {

@@ -1,12 +1,14 @@
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
 import "../style/pages/accounts.css";
 import { useEffect, useRef, useState } from "react";
 import Avatar from "../components/ui/Avatar";
-import { Box, TextField } from "@mui/material";
 import { ButtonBlue } from "../components/ui/ButtonBlue";
 import { userInfo } from "../api/userInfo";
 import { ToastContainer, toast } from "react-toastify";
+import { authApi } from "../api/authApi";
+
 function Account() {
   const navigate = useNavigate();
   const [selectedAvatar, setSelectedAvatar] = useState<File | null>(null);
@@ -14,10 +16,12 @@ function Account() {
   const [name, setName] = useState("");
   const [lastName, setLastName] = useState("");
   const firstFetching = useRef(true);
+
   const handleAvatarChange = (base64Image: File | null) => {
     setSelectedAvatar(base64Image);
     console.log("Отримали картинку в батьківському компоненті:", base64Image);
   };
+
   const fetchDataUser = async () => {
     try {
       const fetchData = await userInfo.GetInfoUser();
@@ -31,12 +35,14 @@ function Account() {
       console.log(error);
     }
   };
+
   useEffect(() => {
     if (firstFetching.current) {
       fetchDataUser();
       firstFetching.current = false;
     }
   }, []);
+
   const handlerSaveProfile = async () => {
     try {
       if (!name || !lastName) {
@@ -51,9 +57,9 @@ function Account() {
           theme: "dark",
         });
         console.log("нема полів", name, lastName, avatar);
-
         return;
       }
+
       let compressedFileString: string | null = null;
       if (selectedAvatar) {
         const compressedFile = await compressImage(selectedAvatar);
@@ -72,6 +78,20 @@ function Account() {
     }
   };
 
+  const handleLogout = () => {
+    // Очищаємо всі cookies
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    const clearToken = authApi.logout();
+    console.log("logout token", clearToken);
+    if (clearToken) {
+      navigate("/");
+    }
+  };
+
   async function compressImage(file: File): Promise<File> {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -86,7 +106,6 @@ function Account() {
           let width = img.width;
           let height = img.height;
 
-          // Зменшуємо розміри, якщо занадто великі
           const maxWidth = 800;
           const maxHeight = 800;
 
@@ -108,7 +127,6 @@ function Account() {
           const ctx = canvas.getContext("2d")!;
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Стискаємо з якістю 0.7
           canvas.toBlob(
             (blob) => {
               if (blob) {
@@ -126,18 +144,20 @@ function Account() {
       };
     });
   }
+
   function fileToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        resolve(reader.result as string); // "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
+        resolve(reader.result as string);
       };
       reader.onerror = (error) => {
         reject(error);
       };
     });
   }
+
   return (
     <div className="account">
       <ToastContainer
@@ -152,114 +172,34 @@ function Account() {
         pauseOnHover
         theme="dark"
       />
-      <header className="account__header" onClick={() => navigate(-1)}>
-        <ArrowBackIosIcon sx={{ color: "white" }} />
+      <header className="account__header">
+        <div onClick={() => navigate(-1)} className="account__header-back">
+          <ArrowBackIosIcon sx={{ color: "white" }} />
+        </div>
+        <button onClick={handleLogout} className="account__header-logout">
+          <LogoutIcon sx={{ fontSize: 20, marginRight: "8px" }} />
+          Logout
+        </button>
       </header>
-      <main className="account__main">
+      <main className="account__main-container">
         <div className="account__main-avatar">
           <Avatar onAvatarChange={handleAvatarChange} avatarUrl={avatar} />
         </div>
-        <div className="account__main-name">
-          <Box
-            component="form"
-            sx={{
-              backgroundColor: "var(--neutral-dark)", // фон
-              width: "327px", // ширина
-
-              borderRadius: "4px",
-
-              "& .MuiSelect-select": {
-                display: "flex",
-                alignItems: "center", // вирівнює контент по вертикалі
-                height: "100%", // забирає зайвий простір
-                padding: "10px", // додає відступи всередині
-                color: "var(--neutral-off-white)", // колір тексту всередині
-              },
-              "& .MuiOutlinedInput-notchedOutline": {
-                border: "none", // прибираємо рамку
-              },
-              "& .MuiSelect-icon": {
-                top: "50%", // вирівнюємо іконку по центру
-                transform: "translateY(-50%)", // забезпечує вертикальне центрування
-              },
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <TextField
-              sx={{
-                backgroundColor: "var(--neutral-dark)", // фон
-                borderRadius: "4px",
-                width: "327px", // ширина
-                color: "var(--neutral-off-white)", // колір тексту
-                "& .MuiInputBase-input": {
-                  color: "var(--neutral-off-white)", // колір тексту в полі введення
-                },
-                "& .MuiFormLabel-root": {
-                  color: "var(--neutral-off-white)", // колір тексту мітки
-                },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "var(--neutral-off-white)", // колір рамки
-                },
-              }}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              id="outlined-basic"
-              label="First Name (Required)"
-              variant="outlined"
-            />
-          </Box>
-        </div>
-        <div className="account__main-last-name">
-          <Box
-            component="form"
-            sx={{
-              backgroundColor: "var(--neutral-dark)", // фон
-              width: "327px", // ширина
-
-              borderRadius: "4px",
-
-              "& .MuiSelect-select": {
-                display: "flex",
-                alignItems: "center", // вирівнює контент по вертикалі
-                height: "100%", // забирає зайвий простір
-                padding: "10px", // додає відступи всередині
-                color: "var(--neutral-off-white)", // колір тексту всередині
-              },
-              "& .MuiOutlinedInput-notchedOutline": {
-                border: "none", // прибираємо рамку
-              },
-              "& .MuiSelect-icon": {
-                top: "50%", // вирівнюємо іконку по центру
-                transform: "translateY(-50%)", // забезпечує вертикальне центрування
-              },
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <TextField
-              sx={{
-                backgroundColor: "var(--neutral-dark)", // фон
-                borderRadius: "4px",
-                width: "327px", // ширина
-                color: "var(--neutral-off-white)", // колір тексту
-                "& .MuiInputBase-input": {
-                  color: "var(--neutral-off-white)", // колір тексту в полі введення
-                },
-                "& .MuiFormLabel-root": {
-                  color: "var(--neutral-off-white)", // колір тексту мітки
-                },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "var(--neutral-off-white)", // колір рамки
-                },
-              }}
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              id="outlined-basic"
-              label="Last name(Required)"
-              variant="outlined"
-            />
-          </Box>
+        <div className="account__main-fields">
+          <input
+            type="text"
+            className="account__input"
+            placeholder="First Name (Required)"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <input
+            type="text"
+            className="account__input"
+            placeholder="Last Name (Required)"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
         </div>
         <div className="account__main-save-button">
           <ButtonBlue onClick={handlerSaveProfile} textButton="Save" />

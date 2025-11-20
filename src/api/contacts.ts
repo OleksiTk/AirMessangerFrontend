@@ -18,4 +18,16 @@ export const contactsApi = {
     });
     return res.json();
   },
+  getGroups: async (nameGroups: string) => {
+    if (!nameGroups) {
+      return;
+    }
+    const res = await fetch(`${API_BASE_URL}/api/users/groups-get`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nameGroups }),
+      credentials: "include",
+    });
+    return res.json();
+  },
 };

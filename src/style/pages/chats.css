@@ -21,15 +21,51 @@
   padding-bottom: 30px;
   position: relative;
 }
+.main::-webkit-scrollbar {
+  width: 6px;
+}
+.main::-webkit-scrollbar-thumb {
+  background: rgba(55, 95, 255, 0.3);
+  border-radius: 3px;
+}
 .main__chats {
   display: flex;
   flex-direction: column;
   align-items: center;
   row-gap: 10px;
+  width: 100%;
 }
 .main__chats-input-search {
   display: flex;
   justify-content: center;
+  width: 100%;
+}
+.main__chats-input-search-field {
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  font-family: var(--font-family);
+  font-size: 14px;
+  color: var(--neutral-off-white);
+  transition: all 0.2s ease;
+}
+.main__chats-input-search-field::-moz-placeholder {
+  color: rgba(173, 181, 189, 0.5);
+}
+.main__chats-input-search-field::placeholder {
+  color: rgba(173, 181, 189, 0.5);
+}
+.main__chats-input-search-field:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(55, 95, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(55, 95, 255, 0.1);
+}
+@media (max-width: 750px) {
+  .main__chats-input-search-field {
+    width: 70%;
+  }
 }
 .main__story {
   display: flex;

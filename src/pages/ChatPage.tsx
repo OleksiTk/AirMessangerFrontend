@@ -52,6 +52,7 @@ interface Chat {
         name: string;
         name_profile: string;
         last_name: string;
+        isOnline?: boolean;
       };
     }
   ];
@@ -68,6 +69,7 @@ interface Chat {
           avatar: string;
           name: string;
           last_name: string;
+          isOnline?: boolean;
         };
       }
     ];
@@ -721,6 +723,11 @@ function ChatPage() {
                   : chat?.participants?.find(
                       (p) => p.userId !== currentUserGoogleId
                     )?.user?.avatar || `/assets/NoneUserAvatar.jpg`
+              }
+              isOnline={
+                chat?.participants?.find(
+                  (p) => p.userId !== currentUserGoogleId
+                )?.user?.isOnline || false
               }
             />
           </>

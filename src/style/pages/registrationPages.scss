@@ -1,4 +1,6 @@
 .registration {
+  position: relative;
+
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--neutral-active);
@@ -15,6 +17,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    z-index: 2;
   }
   &-illustration {
     padding-top: 120px;
@@ -324,4 +327,18 @@
 .active-blur {
   background-color: transparent;
   filter: blur(5px);
+}
+.background-registration {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+  animation: fadeIn 0.3s ease-out;
+  cursor: pointer;
+  opacity: 1;
 }

@@ -28,6 +28,12 @@
   position: relative;
   flex: 1;
 }
+.main__accounts-information__profile {
+  cursor: pointer;
+}
+.main__accounts-information__chats {
+  cursor: pointer;
+}
 .main__accounts-icon {
   flex-shrink: 0;
   position: relative;
@@ -47,6 +53,7 @@
   width: 49px;
   height: 50px;
   position: absolute;
+  border-radius: 50%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -138,6 +145,7 @@
   align-items: center;
   justify-content: space-between;
   flex: 1;
+  cursor: pointer;
 }
 .main__settings-appereance-text {
   padding-left: 10px;
@@ -160,6 +168,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  cursor: pointer;
 }
 .main__settings-notification-text {
   padding-left: 10px;
@@ -179,6 +188,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  cursor: pointer;
 }
 .main__settings-privacy-text {
   padding-left: 15px;
@@ -198,6 +208,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  cursor: pointer;
 }
 .main__settings-data-usage-text {
   padding-left: 10px;
@@ -217,6 +228,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  cursor: pointer;
 }
 .main__settings-help-arrow {
   padding-right: 3px;
@@ -236,6 +248,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  cursor: pointer;
 }
 .main__settings-invite-your-friends-arrow {
   padding-right: 3px;

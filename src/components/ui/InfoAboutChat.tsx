@@ -9,6 +9,7 @@ function InfoAboutChat({
   avatarUser,
   nameUser,
   membersInGroup,
+  isOnline,
 }: {
   isGroupChatCheck: boolean;
   isOpenModelInfoChat: (value: boolean) => void;
@@ -16,6 +17,7 @@ function InfoAboutChat({
   avatarUser: string;
   nameUser: string;
   membersInGroup?: Array<any>;
+  isOnline?: boolean;
 }) {
   const [isGroupChat, setIsGroupChat] = useState(isGroupChatCheck);
   const [chatsMembers, setChatsMembers] = useState(membersInGroup || []);
@@ -248,7 +250,9 @@ function InfoAboutChat({
                 <img
                   src={avatarUser}
                   alt="avatar"
-                  className="model-info-chat__single-chat-avatar-img"
+                  className={`model-info-chat__single-chat-avatar-img ${
+                    isOnline ? "online" : "offline"
+                  }`}
                 />
               </div>
               <div className="model-info-chat__single-chat-name">

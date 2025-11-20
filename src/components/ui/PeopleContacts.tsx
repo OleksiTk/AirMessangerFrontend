@@ -3,14 +3,16 @@ import { useEffect, useState } from "react";
 import SearchInput from "./SearchInput";
 import { useNavigate } from "react-router-dom";
 import { contactsApi } from "../../api/contacts";
-import { socket } from "../../socket/socket";
+import { connectSocket, disconnectSocket, socket } from "../../socket/socket";
 import { chatApi } from "../../api/chatApi";
 import ChatSkeletonLoader from "./ChatSkeletonLoader";
+import { useUserStatus } from "../../hooks/useUserStatus";
 interface Contact {
   id: number;
   avatar?: string | null;
   name?: string | null;
   name_profile?: string;
+  isOnline?: boolean;
 }
 
 interface MappedContact {
@@ -18,18 +20,22 @@ interface MappedContact {
   avatar?: string | null;
   name?: string | null;
   name_profile: string;
+  isOnline?: boolean;
 }
 
 function PeopleContacts({ Pages }: { Pages: string }) {
   const [activePage, setActivePage] = useState("");
   const [contacts, setContacts] = useState<MappedContact[]>([]);
+  const [originalContacts, setOriginalContacts] = useState<MappedContact[]>([]);
   const [loading, setLoading] = useState(false);
   const [groups, setGroups] = useState<MappedContact[]>([]);
+  const [valueSearch, setValueSearch] = useState("");
   const navigate = useNavigate();
+
   useEffect(() => {
     setActivePage(Pages);
     console.log("ця умова робить");
-
+    connectSocket();
     // Встановлення підключення та слухання подій сокета
     socket.on("connect", () => {
       console.log("Підключено до серверу з id:", socket.id);
@@ -41,10 +47,12 @@ function PeopleContacts({ Pages }: { Pages: string }) {
 
       // Оновлюємо список контактів після того, як додали новий контакт
       getContacts();
+      socket.emit("get:contacts:status");
     });
 
     socket.on("disconnect", () => {
       console.log("Відключено від серверу");
+      disconnectSocket();
     });
 
     // Очистка після демонтажу компонента
@@ -62,7 +70,20 @@ function PeopleContacts({ Pages }: { Pages: string }) {
     getContacts();
     getGroups();
   }, []);
+  useEffect(() => {
+    if (!valueSearch) {
+      setContacts(originalContacts);
+      return;
+    }
 
+    const filteredContacts = originalContacts.filter(
+      (contact) =>
+        contact.name?.toLowerCase().includes(valueSearch.toLowerCase()) ||
+        contact.name_profile.toLowerCase().includes(valueSearch.toLowerCase())
+    );
+
+    setContacts(filteredContacts);
+  }, [valueSearch, originalContacts]);
   useEffect(() => {
     console.log("🔁 contacts updated:", contacts);
   }, [contacts]);
@@ -80,10 +101,11 @@ function PeopleContacts({ Pages }: { Pages: string }) {
             avatar: element.avatar || "",
             name: element.name || "",
             name_profile: element.name_profile || "", // ✅ name_profile для URL
+            isOnline: element.isOnline || false,
           })
         );
-
         setContacts(mappedContacts);
+        setOriginalContacts(mappedContacts);
         console.log("mapped contacts:", mappedContacts);
       }
     } catch (error) {
@@ -128,9 +150,13 @@ function PeopleContacts({ Pages }: { Pages: string }) {
     return (
       <div className="main__chats">
         <div className="main__chats-input-search">
-          <Container maxWidth="sm" sx={{ paddingLeft: 0 }}>
-            <SearchInput />
-          </Container>
+          <input
+            type="text"
+            className="main__chats-input-search-field"
+            placeholder="Search Groups or chats"
+            value={valueSearch}
+            onChange={(e) => setValueSearch(e.target.value)}
+          />
         </div>
         <ChatSkeletonLoader />
       </div>
@@ -140,9 +166,13 @@ function PeopleContacts({ Pages }: { Pages: string }) {
   return (
     <div className="main__chats">
       <div className="main__chats-input-search">
-        <Container maxWidth="sm" sx={{ paddingLeft: 0 }}>
-          <SearchInput />
-        </Container>
+        <input
+          type="text"
+          className="main__chats-input-search-field"
+          placeholder="Search Groups or chats"
+          value={valueSearch}
+          onChange={(e) => setValueSearch(e.target.value)}
+        />
       </div>
 
       {contacts.map((element) => (
@@ -161,31 +191,33 @@ function PeopleContacts({ Pages }: { Pages: string }) {
               alt="avatar"
             />
             <div className="main-groups__icon-active">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M8 1C11.866 1 15 4.13401 15 8C15 11.866 11.866 15 8 15C4.13401 15 1 11.866 1 8C1 4.13401 4.13401 1 8 1Z"
-                  fill="#2CC069"
-                  stroke="#F7F7FC"
-                />
-              </svg>
+              {element.isOnline && (
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8 1C11.866 1 15 4.13401 15 8C15 11.866 11.866 15 8 15C4.13401 15 1 11.866 1 8C1 4.13401 4.13401 1 8 1Z"
+                    fill="#2CC069"
+                    stroke="#F7F7FC"
+                  />
+                </svg>
+              )}
             </div>
           </div>
           <div className="main-groups__information">
             <div className="main-groups__information__name">{element.name}</div>
-            <div className="main-groups__information__lastmessage">
+            {/* <div className="main-groups__information__lastmessage">
               How is it going?
-            </div>
+            </div> */}
           </div>
           {activePage == "chats" ? (
             <div className="main-groups__notifications main-notifications">
               <div className="main-notifications__days">17/6</div>
-              <div className="main-notifications__count">3</div>
+              {/* <div className="main-notifications__count">3</div> */}
             </div>
           ) : (
             <div></div>
@@ -208,7 +240,7 @@ function PeopleContacts({ Pages }: { Pages: string }) {
               alt="avatar"
             />
             <div className="main-groups__icon-active">
-              <svg
+              {/* <svg
                 width="16"
                 height="16"
                 viewBox="0 0 16 16"
@@ -220,19 +252,17 @@ function PeopleContacts({ Pages }: { Pages: string }) {
                   fill="#2CC069"
                   stroke="#F7F7FC"
                 />
-              </svg>
+              </svg> */}
             </div>
           </div>
           <div className="main-groups__information">
             <div className="main-groups__information__name">{element.name}</div>
-            <div className="main-groups__information__lastmessage">
-              How is it going?
-            </div>
+            <div className="main-groups__information__lastmessage"></div>
           </div>
           {activePage == "chats" ? (
             <div className="main-groups__notifications main-notifications">
               <div className="main-notifications__days">17/6</div>
-              <div className="main-notifications__count">3</div>
+              {/* <div className="main-notifications__count">3</div> */}
             </div>
           ) : (
             <div></div>

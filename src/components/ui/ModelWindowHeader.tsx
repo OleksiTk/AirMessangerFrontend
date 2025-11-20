@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { contactsApi } from "../../api/contacts";
 import { socket } from "../../socket/socket";
 import { ButtonBlue } from "./ButtonBlue";
@@ -18,14 +18,15 @@ function ModelWindowHeader({
   const [modalWindow, setModalWindow] = useState(isOpenModelWindow);
   const [name, setName] = useState("");
   const [findName, setFindName] = useState<any[]>([]);
-
+  const [friendsContacts, setFriendsContacts] = useState<any[]>([]);
   const [avatar, setAvatar] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null); // ← ВАЖЛИВО!
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [secondStep, setSecondStep] = useState(false);
   const [nameGroups, setNameGruops] = useState("");
-
+  const [nameGroupsForGet, setNameGroupsForGet] = useState("");
   const [switcher, setSwitcher] = useState("Contacts");
+  const [arrayGroups, setArrayGroups] = useState<any[]>([]);
   useEffect(() => {
     FindUser();
   }, [name]);
@@ -84,6 +85,16 @@ function ModelWindowHeader({
 
       if (addContacts) {
         console.log("succes", addContacts);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function joinToGroups(name_groups: string) {
+    try {
+      const joinGroups = await chatApi.joinToGroups(name_groups);
+      if (joinGroups) {
+        console.log("succes", joinGroups);
       }
     } catch (error) {
       console.log(error);
@@ -214,6 +225,41 @@ function ModelWindowHeader({
     } finally {
     }
   };
+  const GetContactsFriends = async () => {
+    try {
+      const contacts = await contactsApi.getContacts();
+
+      if (contacts && Array.isArray(contacts.data)) {
+        setFriendsContacts(contacts.data);
+        console.log("Contacts friends:", contacts);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (switchContacts) {
+      GetContactsFriends();
+    }
+  }, [switchContacts]);
+  const GetGroups = async () => {
+    try {
+      if (!nameGroupsForGet.trim()) {
+        setArrayGroups([]);
+        return;
+      }
+      const groups = await contactsApi.getGroups(nameGroupsForGet);
+      if (groups && Array.isArray(groups.data)) {
+        console.log("Groups:", groups);
+        setArrayGroups(groups.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    GetGroups();
+  }, [nameGroupsForGet]);
   return (
     <div className="modal-window">
       <div className="modal-window__switcher">
@@ -222,7 +268,9 @@ function ModelWindowHeader({
             onClick={() => {
               HandlerSwitcher("Contacts");
             }}
-            className="modal-window__switcher-contacts"
+            className={`modal-window__switcher-contacts ${
+              switcher === "Contacts" ? "active-buttons" : ""
+            }`}
           >
             <p className="modal-window__switcher-contacts-text">Contacts</p>
           </button>
@@ -230,7 +278,9 @@ function ModelWindowHeader({
             onClick={() => {
               HandlerSwitcher("Groups");
             }}
-            className="modal-window__switcher-groups"
+            className={`modal-window__switcher-groups ${
+              switcher === "Groups" ? "active-buttons" : ""
+            }`}
           >
             <p className="modal-window__switcher-groups-text">Groups</p>
           </button>
@@ -329,27 +379,21 @@ function ModelWindowHeader({
                       <div className="creating-groups__blocks">
                         {" "}
                         {switchContacts ? (
-                          <div className="creating-groups__blocks-frends"></div>
-                        ) : (
-                          <div>
-                            {" "}
-                            <input
-                              value={name}
-                              onChange={(e) => setName(e.target.value)}
-                              type="text"
-                              className="modal-window__input"
-                            />
+                          <div className="creating-groups__blocks-friends">
                             <div className="contacts-form">
-                              {findName.length > 0
-                                ? findName.map((user) => (
-                                    <div key={user.id} className="contact-item">
-                                      <div className="contact-item__block">
+                              <div className="contacts-form__list">
+                                {friendsContacts.length > 0
+                                  ? friendsContacts.map((user) => (
+                                      <div
+                                        key={user.id}
+                                        className="contacts-form__item"
+                                      >
                                         <img
                                           src={user.avatar}
                                           alt={user.name_profile}
-                                          className="contact-item__block-img"
+                                          className="contacts-form__block-img"
                                         />
-                                        <span className="contact-item__block-name">
+                                        <span className="contacts-form__block-name">
                                           {user.name_profile}
                                         </span>
                                         <div
@@ -358,14 +402,56 @@ function ModelWindowHeader({
                                               user.name_profile
                                             );
                                           }}
-                                          className="contact-item__block-add"
+                                          className="contacts-form__block-add"
                                         >
                                           +
                                         </div>
                                       </div>
-                                    </div>
-                                  ))
-                                : ""}
+                                    ))
+                                  : ""}
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="creating-groups__blocks-friends-search">
+                            {" "}
+                            <input
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                              type="text"
+                              placeholder="Search people ... "
+                              className="modal-window__input"
+                            />
+                            <div className="contacts-form">
+                              <div className="contacts-form__list">
+                                {findName.length > 0
+                                  ? findName.map((user) => (
+                                      <div
+                                        key={user.id}
+                                        className="contacts-form__item"
+                                      >
+                                        <img
+                                          src={user.avatar}
+                                          alt={user.name_profile}
+                                          className="contacts-form__block-img"
+                                        />
+                                        <span className="contacts-form__block-name">
+                                          {user.name_profile}
+                                        </span>
+                                        <div
+                                          onClick={() => {
+                                            HandlerAddGroupsContacts(
+                                              user.name_profile
+                                            );
+                                          }}
+                                          className="contacts-form__block-add"
+                                        >
+                                          +
+                                        </div>
+                                      </div>
+                                    ))
+                                  : ""}
+                              </div>
                             </div>
                           </div>
                         )}
@@ -378,15 +464,20 @@ function ModelWindowHeader({
                       </div>
                     </div>
                   ) : (
-                    <div>
-                      <div
+                    <div className="creating-groups__main">
+                      <span
                         onClick={() => {
                           setSwitcherCreateGroups(false);
                         }}
-                        className="creating-groups__cross"
+                        className="model-info-chat__group-chat--search-people--header--back-arrow"
                       >
-                        <span className="creating-groups__cross-style">x</span>
-                      </div>
+                        <img
+                          className="model-info-chat__group-chat--search-people--header--back-arrow-img"
+                          src="/assets/arrow.png"
+                          alt="close"
+                        />
+                      </span>
+
                       <div className="creating-groups__mainBlock">
                         {" "}
                         <div className="creating-groups__mainBlock-avatar">
@@ -444,55 +535,14 @@ function ModelWindowHeader({
                           </div>
                         </div>
                         <div className="creating-groups__mainBlock-inputs">
-                          <Box
-                            component="form"
-                            sx={{
-                              backgroundColor: "var(--neutral-dark)", // фон
-                              width: "327px", // ширина
-
-                              borderRadius: "4px",
-
-                              "& .MuiSelect-select": {
-                                display: "flex",
-                                alignItems: "center", // вирівнює контент по вертикалі
-                                height: "100%", // забирає зайвий простір
-                                padding: "10px", // додає відступи всередині
-                                color: "var(--neutral-off-white)", // колір тексту всередині
-                              },
-                              "& .MuiOutlinedInput-notchedOutline": {
-                                border: "none", // прибираємо рамку
-                              },
-                              "& .MuiSelect-icon": {
-                                top: "50%", // вирівнюємо іконку по центру
-                                transform: "translateY(-50%)", // забезпечує вертикальне центрування
-                              },
-                            }}
-                            noValidate
-                            autoComplete="off"
-                          >
-                            <TextField
-                              sx={{
-                                backgroundColor: "var(--neutral-dark)", // фон
-                                borderRadius: "4px",
-                                width: "327px", // ширина
-                                color: "var(--neutral-off-white)", // колір тексту
-                                "& .MuiInputBase-input": {
-                                  color: "var(--neutral-off-white)", // колір тексту в полі введення
-                                },
-                                "& .MuiFormLabel-root": {
-                                  color: "var(--neutral-off-white)", // колір тексту мітки
-                                },
-                                "& .MuiOutlinedInput-notchedOutline": {
-                                  borderColor: "var(--neutral-off-white)", // колір рамки
-                                },
-                              }}
-                              value={nameGroups}
-                              onChange={(e) => setNameGruops(e.target.value)}
-                              id="outlined-basic"
-                              label="Name Groups (Required)"
-                              variant="outlined"
-                            />
-                          </Box>
+                          <input
+                            type="text"
+                            className="creating-groups__mainBlock-inputs-field"
+                            value={nameGroups}
+                            onChange={(e) => setNameGruops(e.target.value)}
+                            id="outlined-basic"
+                            placeholder="Name Groups (Required)"
+                          />
                         </div>
                         <div className="creating-groups__mainBlock-button">
                           <ButtonBlue
@@ -507,7 +557,37 @@ function ModelWindowHeader({
               </div>
             ) : (
               <div className="modal-window__groups-search">
-                <input type="text" className="modal-window__input" />
+                <input
+                  value={nameGroupsForGet}
+                  onChange={(e) => setNameGroupsForGet(e.target.value)}
+                  type="text"
+                  className="modal-window__input"
+                  placeholder="Searchs gropus ... "
+                />
+                <div className="contacts-form">
+                  {arrayGroups.length > 0
+                    ? arrayGroups.map((groups) => (
+                        <div key={groups.id} className="contacts-form__item">
+                          <img
+                            src={groups.avatar}
+                            alt={groups.name}
+                            className="contacts-form__block-img"
+                          />
+                          <span className="contacts-form__block-name">
+                            {groups.name}''
+                          </span>
+                          <div
+                            onClick={() => {
+                              joinToGroups(groups.name);
+                            }}
+                            className="contacts-form__block-join"
+                          >
+                            <img src="/assets/next.png" alt="" />
+                          </div>
+                        </div>
+                      ))
+                    : ""}
+                </div>
               </div>
             )}
           </div>

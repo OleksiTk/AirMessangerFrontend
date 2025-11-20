@@ -68,23 +68,6 @@ function MorePage() {
               <div className="main__accounts-profile-info_name">
                 {name} {lastName}
               </div>
-              <div className="main__accounts-profile-info_telephone">
-                +1 234 567 8901
-              </div>
-            </div>
-            <div className="main__accounts-more-arrow">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M15.713 12L9.70196 5.99001L8.28796 7.40401L12.888 12.004L8.28796 16.597L9.70196 18.011L15.713 12Z"
-                  fill="#F7F7FC"
-                />
-              </svg>
             </div>
           </div>
           <div className="main__accounts-information">
@@ -229,7 +212,12 @@ function MorePage() {
                 </svg>
               </div>
             </div>
-            <div className="main__settings-privacy">
+            <div
+              onClick={() => {
+                navigate("/more/privacy");
+              }}
+              className="main__settings-privacy"
+            >
               <div className="main__settings-privacy-icon">
                 {" "}
                 <svg
@@ -295,7 +283,12 @@ function MorePage() {
                 </svg>
               </div>
             </div>
-            <div className="main__settings-help">
+            <div
+              className="main__settings-help"
+              onClick={() => {
+                navigate("/more/help");
+              }}
+            >
               <div className="main__settings-help-icon">
                 {" "}
                 <svg

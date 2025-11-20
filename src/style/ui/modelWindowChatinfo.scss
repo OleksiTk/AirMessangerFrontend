@@ -494,8 +494,6 @@
         height: 80px;
         border-radius: 50%;
         object-fit: cover;
-        border: 4px solid rgba(55, 95, 255, 0.4);
-        box-shadow: 0 8px 20px rgba(55, 95, 255, 0.3);
       }
     }
 
@@ -623,4 +621,12 @@
     opacity: 1;
     transform: translateX(0);
   }
+}
+.online {
+  border: 4px solid rgba(26, 235, 96, 0.4);
+  box-shadow: 0 8px 20px rgba(26, 235, 96, 0.3);
+}
+.offline {
+  border: 4px solid rgba(55, 95, 255, 0.4);
+  box-shadow: 0 8px 20px rgba(55, 95, 255, 0.3);
 }

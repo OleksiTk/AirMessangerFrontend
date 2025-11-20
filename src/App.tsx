@@ -10,6 +10,8 @@ import ChatPage from "./pages/ChatPage";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
 import PublicRoute from "./components/ui/PublicRoute";
 import Account from "./pages/Account";
+import Privacy from "./pages/Privacy";
+import Help from "./pages/Help";
 
 function App() {
   return (
@@ -69,6 +71,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <Account />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/more/privacy"
+            element={
+              <ProtectedRoute>
+                <Privacy />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/more/help"
+            element={
+              <ProtectedRoute>
+                <Help />
               </ProtectedRoute>
             }
           />

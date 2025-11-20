@@ -1,4 +1,7 @@
 .button-blue {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-color: transparent;
   border-radius: 30px;
   padding: 12px 48px;
@@ -16,7 +19,7 @@
 .button-blue__text {
   font-family: var(--font-family);
   font-weight: 600;
-  font-size: 16px;
+  font-size: 20px;
   line-height: 175%;
   text-align: center;
   color: var(--neutral-off-white);
