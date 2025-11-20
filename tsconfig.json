@@ -1,4 +1,8 @@
 {
+  "noUnusedLocals": false,
+  "noUnusedParameters": false,
+  "noUncheckedSideEffectImports": false,
+  "noFallthroughCasesInSwitch": false,
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
