@@ -20,6 +20,7 @@
     z-index: 2;
   }
   &-illustration {
+    position: relative;
     padding-top: 120px;
     display: flex;
     flex-direction: column;
@@ -38,6 +39,9 @@
       font-size: 24px;
       text-align: center;
       color: var(--neutral-off-white);
+    }
+    &__img-wrapper {
+      position: relative;
     }
   }
   &-button {
@@ -341,4 +345,144 @@
   animation: fadeIn 0.3s ease-out;
   cursor: pointer;
   opacity: 1;
+}
+.img-animation-chats {
+  &__background-first {
+    position: absolute;
+    top: 16.4%;
+    left: 36%;
+    width: 40px;
+    border-radius: 25px;
+    height: auto;
+    background-color: var(--brand-color-default);
+    height: 20px;
+
+    &-dot-one {
+      position: absolute;
+      top: 5px;
+      left: 6px;
+      width: 6px;
+      height: 6px;
+      background-color: var(--neutral-off-white);
+      border-radius: 50%;
+      animation: moveDotFirst 2s infinite;
+    }
+    &-dot-two {
+      position: absolute;
+      top: 5px;
+      left: 18px;
+      width: 6px;
+      height: 6px;
+      background-color: var(--neutral-off-white);
+      border-radius: 50%;
+      animation: moveDotSecond 2s infinite;
+    }
+    &-dot-three {
+      position: absolute;
+      top: 5px;
+      left: 30px;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      background-color: var(--neutral-off-white);
+      border-radius: 50%;
+      animation: moveDotThird 2s infinite;
+    }
+    @keyframes moveDotFirst {
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+      50% {
+        transform: translate(2px, -1px);
+      }
+    }
+    @keyframes moveDotSecond {
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+      50% {
+        transform: translate(2px, -1px);
+      }
+    }
+    @keyframes moveDotThird {
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+      50% {
+        transform: translate(2px, -1px);
+      }
+    }
+  }
+  &__background-two {
+    position: absolute;
+    top: 0.4%;
+    left: 60%;
+    width: 40px;
+    border-radius: 25px;
+    height: auto;
+    background-color: var(--brand-color-dark-mode);
+    height: 20px;
+
+    &-dot-one {
+      position: absolute;
+      top: 5px;
+      left: 6px;
+      width: 6px;
+      height: 6px;
+      background-color: var(--neutral-off-white);
+      border-radius: 50%;
+      animation: moveDotFirstNext 2s infinite;
+    }
+    &-dot-two {
+      position: absolute;
+      top: 5px;
+      left: 18px;
+      width: 6px;
+      height: 6px;
+      background-color: var(--neutral-off-white);
+      border-radius: 50%;
+      animation: moveDotSecondNext 2s infinite;
+    }
+    &-dot-three {
+      position: absolute;
+      top: 5px;
+      left: 30px;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      background-color: var(--neutral-off-white);
+      border-radius: 50%;
+      animation: moveDotThirdNext 2s infinite;
+    }
+    @keyframes moveDotFirstNext {
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+      50% {
+        transform: translate(-2px, -1px);
+      }
+    }
+    @keyframes moveDotSecondNext {
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+      50% {
+        transform: translate(-2px, -1px);
+      }
+    }
+    @keyframes moveDotThirdNext {
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+      50% {
+        transform: translate(-2px, -1px);
+      }
+    }
+  }
 }

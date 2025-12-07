@@ -12,6 +12,7 @@ import PublicRoute from "./components/ui/PublicRoute";
 import Account from "./pages/Account";
 import Privacy from "./pages/Privacy";
 import Help from "./pages/Help";
+import Appearance from "./components/ui/Appearance";
 
 function App() {
   return (
@@ -87,6 +88,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Help />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/more/appearance"
+            element={
+              <ProtectedRoute>
+                <Appearance />
               </ProtectedRoute>
             }
           />

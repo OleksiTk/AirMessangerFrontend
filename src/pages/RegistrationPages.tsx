@@ -27,11 +27,26 @@ export const RegistrationPages = () => {
 
       <div className="registration-container">
         <div className="registration-illustration">
-          <img
-            className="registration-illustration__img"
-            src="/assets/Illustration.svg"
-            alt="people messaging"
-          />
+          <div className="registration-illustration__img-wrapper">
+            <img
+              className="registration-illustration__img"
+              src="/assets/Illustration.svg"
+              alt="people messaging"
+            />
+            <div className="registration-illustration__img-animation-chats img-animation-chats">
+              <div className="img-animation-chats__background-first">
+                <div className="img-animation-chats__background-first-dot-one"></div>
+                <div className="img-animation-chats__background-first-dot-two"></div>
+                <div className="img-animation-chats__background-first-dot-three"></div>
+              </div>
+              <div className="img-animation-chats__background-two">
+                <div className="img-animation-chats__background-two-dot-one"></div>
+                <div className="img-animation-chats__background-two-dot-two"></div>
+                <div className="img-animation-chats__background-two-dot-three"></div>
+              </div>
+            </div>
+          </div>
+
           <p className="registration-illustration__text">
             Connect easily with your family and friends over countries
           </p>

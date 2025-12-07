@@ -144,7 +144,12 @@ function MorePage() {
             </div>
           </div>
           <div className="main__settings">
-            <div className="main__settings-appereance">
+            <div
+              className="main__settings-appereance"
+              onClick={() => {
+                navigate("/more/appearance");
+              }}
+            >
               <div className="main__settings-appereance-icon">
                 {" "}
                 <svg

@@ -122,6 +122,7 @@
   font-size: 14px;
   color: var(--neutral-off-white);
   transition: all 0.2s ease;
+  width: 90%;
 }
 .modal-window__input::-moz-placeholder {
   color: rgba(173, 181, 189, 0.5);

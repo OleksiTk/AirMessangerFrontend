@@ -53,6 +53,7 @@ interface Chat {
         name_profile: string;
         last_name: string;
         isOnline?: boolean;
+        Theme?: string;
       };
     }
   ];
@@ -70,6 +71,7 @@ interface Chat {
           name: string;
           last_name: string;
           isOnline?: boolean;
+          Theme?: string;
         };
       }
     ];
@@ -643,7 +645,14 @@ function ChatPage() {
       isTyping: false,
     });
   };
+  const takeColorChats = () => {
+    let takeItTheme =
+      chat?.participants?.find((p) => p.userId == currentUserGoogleId)?.user
+        ?.Theme || "dark";
+    console.log(takeItTheme);
 
+    return takeItTheme;
+  };
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -733,7 +742,10 @@ function ChatPage() {
           </>
         )}
         {/* Header */}
-        <header className="header-chat">
+        <header
+          className="header-chat"
+          style={{ backgroundColor: takeColorChats() }}
+        >
           <div className="header-chat__arrow" onClick={() => navigate(-1)}>
             <svg
               width="24"
@@ -1244,7 +1256,10 @@ function ChatPage() {
         </main>
 
         {/* Footer */}
-        <footer className="footer">
+        <footer
+          className="footer"
+          style={{ backgroundColor: takeColorChats() }}
+        >
           <div className="footer__container">
             <div className="footer__plus-add-file">
               <svg

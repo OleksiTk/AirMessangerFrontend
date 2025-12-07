@@ -51,4 +51,13 @@ export const userInfo = {
     });
     return res.json();
   },
+  async setTheme(theme: string) {
+    const res = await fetch(`${API_BASE_URL}/api/users/set-theme`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ theme }),
+    });
+    return res.json();
+  },
 };

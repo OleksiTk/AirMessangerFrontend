@@ -192,6 +192,7 @@
         align-items: center;
         justify-content: flex-end;
         padding-top: 12px;
+        gap: 10px;
       }
       &__title {
         width: 100%;
@@ -266,17 +267,35 @@
         }
       }
       &__text {
-        margin-top: 20px;
-        margin-bottom: 20px;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
         font-family: var(--font-family);
-        font-weight: 500;
+        font-weight: 600;
         font-size: 14px;
         line-height: 171%;
         color: var(--neutral-off-white);
+
+        // Ефект рідкого скла (glassmorphism)
+        background: rgba(33, 37, 41, 0.6); // напівпрозорий темний фон
+        backdrop-filter: blur(20px) saturate(180%); // розмиття фону позаду
+        -webkit-backdrop-filter: blur(20px) saturate(180%); // для Safari
+
+        border: 1px solid rgba(255, 255, 255, 0.1); // тонка світла рамка
+        border-radius: 10px;
+        padding: 6px 8px;
+        width: 80%;
+        height: 36px;
+
+        transition: all 0.3s ease;
+
+        &:focus {
+          outline: none;
+          background: rgba(33, 37, 41, 0.7);
+          border-color: rgba(55, 95, 255, 0.5);
+          box-shadow: 0 0 0 3px rgba(55, 95, 255, 0.1);
+        }
+
+        &::placeholder {
+          color: rgba(173, 181, 189, 0.6);
+        }
       }
       &__buttons {
         padding-bottom: 20px;
@@ -583,13 +602,14 @@
   }
 }
 .footer {
+  display: flex;
   &__container {
     padding-top: 20px;
     width: 100%;
     height: 50px;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     gap: 20px;
   }
@@ -634,6 +654,9 @@
     }
   }
   &__input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     @media (max-width: 600px) {
       width: 70%;

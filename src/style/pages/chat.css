@@ -190,6 +190,7 @@
   align-items: center;
   justify-content: flex-end;
   padding-top: 12px;
+  gap: 10px;
 }
 .main-chats__send-files .send-files-modal__title {
   width: 100%;
@@ -265,17 +266,32 @@
   border-radius: 8px;
 }
 .main-chats__send-files .send-files-modal__text {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
   font-family: var(--font-family);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 14px;
   line-height: 171%;
   color: var(--neutral-off-white);
+  background: rgba(33, 37, 41, 0.6);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 6px 8px;
+  width: 80%;
+  height: 36px;
+  transition: all 0.3s ease;
+}
+.main-chats__send-files .send-files-modal__text:focus {
+  outline: none;
+  background: rgba(33, 37, 41, 0.7);
+  border-color: rgba(55, 95, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(55, 95, 255, 0.1);
+}
+.main-chats__send-files .send-files-modal__text::-moz-placeholder {
+  color: rgba(173, 181, 189, 0.6);
+}
+.main-chats__send-files .send-files-modal__text::placeholder {
+  color: rgba(173, 181, 189, 0.6);
 }
 .main-chats__send-files .send-files-modal__buttons {
   padding-bottom: 20px;
@@ -583,13 +599,16 @@
   padding-left: 2px;
 }
 
+.footer {
+  display: flex;
+}
 .footer__container {
   padding-top: 20px;
   width: 100%;
   height: 50px;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   gap: 20px;
 }
@@ -630,6 +649,9 @@
   z-index: -1;
 }
 .footer__input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
 }
 @media (max-width: 600px) {

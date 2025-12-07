@@ -79,14 +79,6 @@
   border-radius: 2px 2px 0 0;
 }
 
-.connexion,
-.enregistrer {
-  position: relative;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  opacity: 1;
-  transform: translateX(0);
-}
-
 .connexion.remove-section,
 .enregistrer.active-section {
   position: absolute;
